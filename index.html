@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-layout="desktop">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lane Survivor</title>
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <h1>Lane Survivor</h1>
+        <p class="subtitle">Ultra-light lane dodger tuned for Raspberry Pi static hosting</p>
+      </header>
+      <main class="game-layout">
+        <section class="game-panel">
+          <canvas id="game-canvas" aria-label="Lane Survivor playfield"></canvas>
+          <div class="hud" data-hud>
+            <div class="hud-card">
+              <span class="label">Score</span>
+              <span class="value" data-score>0</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Health</span>
+              <span class="value" data-health>❤️❤️❤️❤️❤️</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Survival</span>
+              <span class="value" data-timer>00:00</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Status</span>
+              <span class="status" data-status></span>
+              <span class="restart-tip">Press ␣ to fire • R to restart</span>
+            </div>
+          </div>
+          <div class="touch-controls" data-touch-controls>
+            <button class="touch-button" data-action="move-left" aria-label="Move left">⟵</button>
+            <button class="touch-button" data-action="fire" aria-label="Fire">🔥</button>
+            <button class="touch-button" data-action="move-right" aria-label="Move right">⟶</button>
+            <button class="touch-button" data-action="restart" aria-label="Restart">↻</button>
+          </div>
+        </section>
+        <aside class="info-panel">
+          <article class="info-card">
+            <h2>How to Play</h2>
+            <ul>
+              <li>Slide between four quantum lanes to dodge neon foes.</li>
+              <li>Tap anywhere or press space to unleash projectiles.</li>
+              <li>Leaks cost health — survive as long as you can.</li>
+              <li>Performance-tuned for 60 FPS on Raspberry Pi 2B.</li>
+            </ul>
+          </article>
+          <article class="info-card milestone-card">
+            <div class="milestone-title">Current Milestone · Playtest Sprint</div>
+            <div class="milestone-item">
+              <span>1</span>
+              <p>Deploy this static build to your Pi 2B or GitHub Pages and verify responsive layout on Android slabs and foldables.</p>
+            </div>
+            <div class="milestone-item">
+              <span>2</span>
+              <p>Gather 10+ survival runs noting score, survival time, and perceived lag; log issues in <code>docs/milestone-notes.md</code>.</p>
+            </div>
+            <div class="milestone-item">
+              <span>3</span>
+              <p>Prioritize next tweaks (balance, art, audio) based on playtest notes for the upcoming enhancement sprint.</p>
+            </div>
+          </article>
+        </aside>
+      </main>
+      <footer>Ready for static hosting — copy to any web server or run <code>python -m http.server</code> locally.</footer>
+    </div>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
