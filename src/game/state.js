@@ -45,7 +45,6 @@ export class GameState {
     this.lastDamage = null;
     this.deathInfo = null;
     this.isGameOver = false;
-    this.damageNumbers = [];
   }
 
   addScore(amount) {

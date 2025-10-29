@@ -108,6 +108,7 @@ export class LaneSurvivorApp {
     };
   }
 
+  // Dynamically resize the game canvas and UI elements to fit the viewport.
   handleResize() {
     this.metrics = this.computeMetrics();
     this.renderer.setMetrics(this.metrics);

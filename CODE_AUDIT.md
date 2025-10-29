@@ -75,9 +75,9 @@ While the code is generally well-structured, some parts are complex and would be
 
 This roadmap provides a suggested order for re-implementing the features from `lane-shooter-enhanced.html`.
 
-### 3.1. Milestone 1: Core Gameplay Loop
+### 3.1. Milestone 1: Core Gameplay Loop (Completed)
 
-This milestone focuses on re-creating the core "survivor" experience.
+This milestone focused on re-creating the core "survivor" experience.
 
 *   **XP and Leveling System:**
     *   Create an `XPManager` class to handle XP drops from enemies and collection by the player.
@@ -113,4 +113,24 @@ This milestone focuses on the remaining features from the original game.
     *   This will be invaluable for balancing the game in the future.
 *   **Enemy Grouping:** Implement the enemy grouping logic as a performance optimization and a gameplay mechanic.
 
-By following this roadmap, you can systematically re-implement the features that made your original game great, while building upon the solid, modular foundation you've already established.
+## 4. Future Milestones
+
+This section outlines the next set of features to be implemented based on your feedback.
+
+### Milestone 4: Advanced Gameplay Mechanics
+
+*   **Enemy Stacking & Varied Placement:** Enemies can be stacked and placed at different horizontal positions within a lane to create more complex patterns and showcase the auto-aim feature.
+*   **Dynamic Lanes:** The game will start with 3 lanes, and more lanes can be added as the difficulty increases.
+*   **Barriers:** Physical barriers will be introduced that block projectiles but are harmless to the player.
+
+### Milestone 5: Advanced Upgrades
+
+*   **Upgraded Auto-Aim:** A new tier of the auto-aim upgrade that allows projectiles to target enemies in adjacent lanes.
+*   **Enhanced Multi-shot:** Multi-shot upgrades will visually show more projectiles.
+*   **Varied Projectile Types:** Introduce new projectile types with unique visual effects and behaviors (e.g., piercing, exploding, etc.).
+*   **Laser Weapon:** A new weapon type that fires a continuous laser beam.
+
+### Milestone 6: UI/UX Improvements
+
+*   **Dynamic Resizing:** Ensure the game canvas and UI elements dynamically resize to fit the viewport.
+*   **HUD Overlay:** Convert the UI elements into a HUD-style overlay on top of the game canvas.

@@ -101,27 +101,27 @@ export class Renderer {
         metrics.offsetX + metrics.laneCenter(enemy.lane) * metrics.scale - width / 2;
       const y = metrics.topY + enemy.y * metrics.scale;
       roundRect(ctx, x, y, width, height, 8 * metrics.scale);
-          ctx.fill();
-        }
-      
-        drawXPOrbs(xpOrbs) {
-          if (!xpOrbs?.length) return;
-          const { ctx, metrics } = this;
-      
-          xpOrbs.forEach((orb) => {
-            const size = orb.size * metrics.scale;
-            const x = metrics.offsetX + orb.x * metrics.scale - size / 2;
-            const y = metrics.topY + orb.y * metrics.scale - size / 2;
-      
-            ctx.save();
-            ctx.globalAlpha = 0.8;
-            ctx.fillStyle = '#00ffff';
-            ctx.shadowColor = '#00ffff';
-            ctx.shadowBlur = 12 * metrics.scale;
-            ctx.fillRect(x, y, size, size);
-            ctx.restore();
-          });
-        });
+      ctx.fill();
+    });
+  }
+
+  drawXPOrbs(xpOrbs) {
+    if (!xpOrbs?.length) return;
+    const { ctx, metrics } = this;
+
+    xpOrbs.forEach((orb) => {
+      const size = orb.size * metrics.scale;
+      const x = metrics.offsetX + orb.x * metrics.scale - size / 2;
+      const y = metrics.topY + orb.y * metrics.scale - size / 2;
+
+      ctx.save();
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = '#00ffff';
+      ctx.shadowColor = '#00ffff';
+      ctx.shadowBlur = 12 * metrics.scale;
+      ctx.fillRect(x, y, size, size);
+      ctx.restore();
+    });
   }
 
   drawPowerUps(powerUps) {
