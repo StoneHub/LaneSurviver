@@ -7,6 +7,9 @@ import { GameEngine } from './game/engine.js';
 import { InputManager } from './game/input.js';
 import { HUDController } from './ui/hud.js';
 import { ResponsiveLayout } from './ui/responsive.js';
+import { ParticleSystem } from './systems/particles.js';
+import { ForceField } from './physics/forces.js';
+import { PowerUpManager } from './game/powerup.js';
 
 export class LaneSurvivorApp {
   constructor({ canvas, hudRoot, controlsRoot }) {
@@ -22,19 +25,30 @@ export class LaneSurvivorApp {
 
     this.hud = new HUDController(hudRoot);
     this.responsive = new ResponsiveLayout(document.documentElement);
+    this.particles = new ParticleSystem();
+    this.forces = new ForceField();
+    this.powerUps = new PowerUpManager({
+      state: this.state,
+      particles: this.particles,
+    });
 
     this.engine = new GameEngine({
       state: this.state,
       player: this.player,
       spawner: this.spawner,
       renderer: this.renderer,
+      particles: this.particles,
+      forces: this.forces,
+      powerUps: this.powerUps,
+      autoFire: true,
+      onFire: () => this.performFire(),
       onTick: (state) => this.hud.update(state),
     });
 
     this.input = new InputManager(document);
     this.input.setHandlers({
       move: (direction) => this.player.move(direction),
-      fire: () => this.player.fire(),
+      fire: () => this.handleFire(),
       restart: () => this.restart(),
     });
     this.input.attach();
@@ -88,8 +102,44 @@ export class LaneSurvivorApp {
 
   restart() {
     this.state.reset();
+    this.particles.clear();
+    this.forces.reset();
     this.spawner.spawnInterval = GAME_CONFIG.enemy.spawnInterval;
     this.engine.lastTime = performance.now();
     this.hud.update(this.state);
+  }
+
+  handleFire() {
+    this.performFire();
+  }
+
+  performFire() {
+    const result = this.player.fire();
+    if (!result) return;
+
+    const { lane, muzzleY } = result;
+    const playerState = this.state.player;
+    const laneProgress = playerState.laneProgress || 0;
+    const laneCenter =
+      GAME_CONFIG.canvasPadding +
+      (lane + laneProgress + 0.5) * GAME_CONFIG.laneWidth;
+
+    this.particles.emitBurst({
+      x: laneCenter,
+      y: muzzleY,
+      count: 8,
+      palette: ['#ffe566', '#fff6a8', '#ffb347'],
+      speed: [160, 240],
+      angle: -Math.PI / 2,
+      spread: Math.PI / 6,
+      life: [140, 220],
+      size: [1.5, 3.5],
+      gravity: 200,
+      drag: 0.82,
+      blend: 'lighter',
+      fadePower: 1.2,
+    });
+
+    this.forces.addShake({ magnitude: 3, duration: 90 });
   }
 }

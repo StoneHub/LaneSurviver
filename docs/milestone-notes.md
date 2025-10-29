@@ -23,3 +23,15 @@ rsync -avz ./ HOST:~/lane-survivor/
 ```
 
 Document at least ten runs before the next milestone review.
+
+## Restoration Checklist (per session)
+
+- Neon presentation matches legacy build (borders, glow, particles).
+- Power-up drops spawn, magnet toward the player, and apply stat changes.
+- Upgrade draft surfaces correctly (modal opens, keyboard/touch navigation, options apply).
+- Notifications and run summaries trigger at the right moments.
+- Settings toggles persist across reloads (auto-collect, damage numbers, etc.).
+- Burst waves escalate into multi-lane cohorts without tanking FPS.
+- Auto-fire cadence feels responsive and lane auto-aim consistently tags the closest threat.
+- HUD reports death cause, lane, and timestamp after each run.
+- Analytics log captures survival time, upgrade picks, and damage taken.

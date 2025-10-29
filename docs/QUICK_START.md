@@ -18,6 +18,8 @@ npm install
 npm run dev
 ```
 
+(Already cloned this repo? The structure above is pre-configured, so you can skip straight to Step 2.)
+
 ### Step 2: Create Basic Structure
 ```bash
 # Create directory structure
@@ -46,6 +48,48 @@ lane-survivor/
 ├── styles/
 │   └── main.css
 ```
+
+---
+
+## 🔄 Migrating the Legacy Neon Build
+
+The second commit (`2ed446b`) contains `lane-shooter-enhanced.html`, a neon-styled survivor packed with systems we want to revive. Use it as a specification while working inside the modular architecture:
+
+1. **Extract visual tokens**
+   - Copy the color palette, gradients, and border styles into `styles/main.css`.
+   - Set `ctx.imageSmoothingEnabled = false` inside `Renderer` to match the pixelated presentation.
+   - Add helper classes for `.upgrade-panel`, `.notification`, and `.gameover-panel` based on the legacy markup.
+
+2. **Map UI panels to the new HUD**
+   - Legacy `#ui` stats → `HUDController` cards (`data-score`, `data-health`, etc.).
+   - Legacy modals (`#upgradeModal`, `#gameOverModal`) → new modal controller modules that manage focus trapping and animations.
+   - Legacy notification feed (`#notificationPanel`) → HUD notification queue (consider `ui/notifications.js`).
+
+3. **Split monolithic logic into systems**
+   - XP orb spawn & collection → `systems/xp.js`.
+   - Upgrade draft + data definitions → `systems/upgrade.js` and `config/upgrades.js`.
+   - Enemy waves, boss timers, and difficulty scaling → `systems/spawn.js` + `systems/difficulty.js`.
+   - Power-up drops & stat bumps → `game/powerup.js` + `config/powerups.js`.
+   - Analytics logging + settings persistence → `analytics/logger.js` and `ui/settings.js`.
+
+4. **Port constants thoughtfully**
+   - Move magic numbers (XP thresholds, spawn intervals, invulnerability times) into `config.js` or dedicated config modules.
+   - Preserve the `GAME_STATS` structure (kills, damage taken, etc.) so analytics remain comparable between builds.
+
+5. **Verify interactions**
+   - Level-up flow should pause the engine, open the modal, apply upgrades, then resume.
+   - Game-over modal should pull from consolidated state (`GameState` + analytics).
+   - Settings toggles must broadcast changes to the relevant systems (e.g., auto-collect XP).
+
+Document every mapping in commit messages or `docs/milestone-notes.md` to keep parity between the neon legacy experience and the modern responsive shell.
+
+---
+
+### Particle & Force Helpers
+
+- `src/systems/particles.js` exposes `emitBurst(options)` for additive CRT bursts, XP pops, muzzle flashes, etc. Coordinates are in world units (`laneWidth` scale); the renderer handles pixel conversion.
+- `src/physics/forces.js` provides `ForceField.addShake({ magnitude, duration })` so gameplay events can trigger camera shake. Magnitude is measured in world units and respects responsive scaling.
+- Both systems are registered in `LaneSurvivorApp` and ticked inside `GameEngine`, which already emits bursts on player fire, enemy kills, and leaks—build new emitters by reusing those hooks.
 
 ---
 

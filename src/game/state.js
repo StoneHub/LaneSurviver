@@ -17,6 +17,12 @@ export class GameState {
       health: GAME_CONFIG.player.maxHealth,
       cooldown: 0,
       laneProgress: 0,
+      fireCooldown: GAME_CONFIG.player.fireCooldown,
+      projectileSpeed: GAME_CONFIG.player.projectileSpeed,
+      bulletCount: 1,
+      spread: 0.18,
+      pierce: 0,
+      autoAimStrength: GAME_CONFIG.player.autoAimStrength ?? 1.2,
     };
     this.difficultyLevel = 1;
     this.score = 0;
@@ -24,8 +30,14 @@ export class GameState {
     this.spawnTimer = 0;
     this.enemies = [];
     this.projectiles = [];
-    this.particles = [];
+    this.powerUps = [];
     this.lastSpawn = 0;
+    this.burstTimer = 0;
+    this.burstActiveTime = 0;
+    this.spawnBurstsTriggered = 0;
+    this.damageLog = [];
+    this.lastDamage = null;
+    this.deathInfo = null;
     this.isGameOver = false;
   }
 
@@ -33,14 +45,36 @@ export class GameState {
     this.score = Math.max(0, this.score + amount);
   }
 
-  damagePlayer(amount) {
-    this.player.health = clamp(
-      this.player.health - amount,
+  damagePlayer(amount, context = {}) {
+    const previousHealth = this.player.health;
+    const elapsed = context.elapsed ?? this.elapsed ?? 0;
+    const nextHealth = clamp(
+      previousHealth - amount,
       0,
       GAME_CONFIG.player.maxHealth,
     );
-    if (this.player.health <= 0) {
+
+    const entry = {
+      amount,
+      cause: context.cause ?? 'unknown',
+      lane: context.lane ?? null,
+      elapsed,
+      previousHealth,
+      nextHealth,
+      meta: context.meta ?? {},
+    };
+
+    this.player.health = nextHealth;
+    this.lastDamage = entry;
+    this.damageLog.push(entry);
+
+    if (nextHealth <= 0) {
       this.isGameOver = true;
+      this.deathInfo = {
+        ...entry,
+        score: this.score,
+        bursts: this.spawnBurstsTriggered,
+      };
     }
   }
 

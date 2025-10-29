@@ -6,6 +6,8 @@ Stop instant-death frustration by adding a health system to your existing game.
 **Time required:** 15-30 minutes  
 **Difficulty:** Easy - just copy/paste these changes
 
+> Restoration note: When porting the legacy neon build into the modular project, mirror these health mechanics inside `GameState` and render the heart string via the new `HUDController`.
+
 ---
 
 ## 🔧 Changes Needed (5 steps)

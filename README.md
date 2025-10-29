@@ -1,13 +1,25 @@
 # Lane Survivor
 
-A responsive lane-dodging survival prototype ready for static hosting on low-power hardware like the Raspberry Pi 2B. The game is implemented with modern ES modules, renders with a single `<canvas>`, and ships with mobile-friendly controls that adapt to folding and slab Android layouts.
+A neon-soaked lane-dodging survival shooter tuned for static hosting on low-power hardware like the Raspberry Pi 2B. The current codebase uses modern ES modules and a single `<canvas>` render path, while our design backlog aims to revive the stylish upgrade-driven experience from the early “lane-shooter-enhanced” build.
 
 ## ✨ Highlights
 
-- **Zero-build static app** – just copy the repository to any web server.
-- **Responsive HUD & controls** that shift between desktop and touch layouts.
+- **Zero-build static app** – copy the repository to any web server and you’re up.
+- **Responsive HUD & controls** that pivot between desktop keyboards and touch overlays.
 - **Performance-first loop** tuned for 60 FPS on Raspberry Pi 2B hardware.
-- **Modular ES6 code** for straightforward tweaking and future expansions.
+- **Juice-ready particle & camera shake scaffolding** baked into the modular engine for fast visual iteration.
+- **Hands-free combat** with auto-fire volleys and lane-aware auto-aim tuned for tighter enemy hitboxes.
+- **Live power-up drops and burst waves** that push escalating, multi-lane enemy hordes.
+- **Restoration roadmap** aligned with the v0.2 “web artifact” commit: CRT glow, upgrade modals, analytics, and reactive UI panels.
+
+## 🔁 Original Vision Recap (Commit `2ed446b`)
+
+- **Ultra neon presentation** – pixelated canvas with thick borders, glow trails, particle bursts, and CRT-inspired palettes.
+- **Diegetic HUD & modals** – health hearts, stat panels, upgrade draft modal, and animated game-over screen.
+- **Depth systems already proven** – XP orbs, multi-lane bullet spreads, enemy cohorts, passive/active upgrades, analytics logging, settings toggles.
+- **Session storytelling** – notifications, run summaries, and progress tracking baked into the UI.
+
+We are using those files as the creative north star while modernizing the architecture and responsive layout.
 
 ## 🚀 Quick Start
 
@@ -30,19 +42,26 @@ Then point an Android phone or tablet at `http://raspberrypi.local:8000` (replac
 - **Desktop:** Arrow / A·D to move, Space / Enter to fire, R to restart.
 - **Touch:** Use the on-screen buttons or tap space on a connected keyboard.
 
-## 📚 Documentation
+## 🛠️ Restoration Roadmap Touchpoints
 
-All reference material now lives in `docs/`:
+- Phase 0: Port neon canvas treatments and HUD panels from `lane-shooter-enhanced.html` into the module renderer.
+- Phase 1: Reintroduce upgrade drafting, notifications, and end-of-run summaries using the new HUD controller.
+- Phase 2: Restore the analytics + settings surfaces, then iterate on fresh upgrade ideas to push beyond the original build.
+- Phase 3: Ship a combined responsive + neon build, log new playtest data, and iterate on balance.
 
-- [`docs/PROJECT_ROADMAP.md`](docs/PROJECT_ROADMAP.md)
-- [`docs/QUICK_START.md`](docs/QUICK_START.md)
-- [`docs/HEALTH_SYSTEM_GUIDE.md`](docs/HEALTH_SYSTEM_GUIDE.md)
-- [`docs/milestone-notes.md`](docs/milestone-notes.md)
+Details for each phase live in the docs listed below.
+
+## 📚 Documentation Map
+
+- [`docs/PROJECT_ROADMAP.md`](docs/PROJECT_ROADMAP.md) – macro roadmap with restoration milestones.
+- [`docs/QUICK_START.md`](docs/QUICK_START.md) – module structure plus migration notes from the single-file build.
+- [`docs/HEALTH_SYSTEM_GUIDE.md`](docs/HEALTH_SYSTEM_GUIDE.md) – copy/paste guide to reinstating the health + i-frame system.
+- [`docs/milestone-notes.md`](docs/milestone-notes.md) – playtest log template and sprint checklists.
 
 ## 🎯 Current Milestone – Playtest Sprint
 
-1. Deploy the static build to your Pi 2B or GitHub Pages and verify the adaptive layout across Android slabs and foldables.
-2. Record at least ten survival runs (score, time, perceived lag) inside `docs/milestone-notes.md`.
-3. Triage improvements for the next sprint (balance, art, audio) based on those notes.
+1. Deploy the static build to Pi 2B or GitHub Pages and verify the adaptive layout on slabs and foldables.
+2. Recreate the neon HUD shell, upgrade modal, and notifications; validate on desktop + touch.
+3. Record at least ten survival runs (score, time, perceived lag) inside `docs/milestone-notes.md`.
 
-Share your findings in `docs/milestone-notes.md` before the next check-in to keep the roadmap on track.
+Share findings in `docs/milestone-notes.md` before the next check-in to keep the restoration roadmap on track.

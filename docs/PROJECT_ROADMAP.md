@@ -2,233 +2,147 @@
 
 ## 📋 Current State
 
-### What We Have
-A fully functional browser-based lane shooter game with:
-- ✅ Core gameplay loop (dodge, shoot, collect XP, level up)
-- ✅ Upgrade system with 10+ different upgrades
-- ✅ Difficulty scaling based on player power
-- ✅ Power-up drops from enemies
-- ✅ Comprehensive game logging system
-- ✅ Settings panel (auto-collect XP, pass-through limits)
-- ✅ Visual effects (particles, damage numbers, notifications)
-- ✅ Enemy grouping system for performance
-- ✅ Homing bullets with auto-aim
+### Modern Responsive Build (`src/`, main branch)
+- ✅ Modular ES module architecture with `GameEngine`, `Renderer`, `InputManager`, `HUDController`, and responsive layout helpers.
+- ✅ Static hosting friendly – runs from `index.html` with zero build tooling.
+- ✅ Mobile-first touch controls surfaced via `data-touch-controls`.
+- ⚠️ Minimal gameplay loop (one enemy type, no upgrades, no analytics, no modals).
+- ⚠️ Visual identity is utilitarian; neon glow, particle bursts, and CRT borders from the legacy build have not been ported yet.
 
-### Current Architecture
-- **Single HTML file** (~1500 lines)
-- Vanilla JavaScript with Canvas API
-- No external dependencies
-- LocalStorage for game logs
-- All code in one monolithic structure
+### Legacy Neon Build (`lane-shooter-enhanced.html`, commit `2ed446b`)
+- 💡 Fully featured lane shooter: XP orbs, upgrade draft modal, run summaries, settings panel, analytics logging, and juicy VFX.
+- 💡 Distinct CRT-inspired presentation with pixelated canvas, glow, and animated UI cards.
+- 💡 Rich upgrade matrix (pierce, multishot, cooldown tweaks, economy boosts) and tuned difficulty curves.
+- ⚠️ Ship-ready experience lives inside a single monolithic HTML/JS file with global state and no responsive layout.
 
-### Known Issues
-1. **Instant death from enemy collision is too harsh** - needs health system
-2. **Balance still too difficult** - players dying in ~13 seconds
-3. **Single file is becoming unwieldy** - hard to maintain
-4. **No code organization** - everything in global scope
-5. **Limited analytics** - console logs only
-6. **No mobile support** - desktop keyboard only
+### Opportunity Snapshot
+- Merge the **responsive modular shell** with the **stylized, content-rich legacy build**.
+- Use the legacy file as a specification: which systems, feelings, and UI panels must exist after the merge.
+- Level up beyond the legacy build by upgrading visuals, balancing the upgrade deck, and ensuring telemetry works across devices.
 
 ---
 
-## 🎯 Vision: Awesome Web App Game
+## 🔥 Restoration Objectives
 
-### Core Goals
-1. **Fun first** - Games should last 3-5+ minutes for good runs
-2. **Polished experience** - Smooth animations, satisfying feedback
-3. **Progressive difficulty** - Gentle learning curve with increasing challenge
-4. **Replayability** - Multiple viable build paths and strategies
-5. **Accessibility** - Mobile-friendly, clear UI/UX
-6. **Data-driven balance** - Use logs to continuously improve
-
-### Target Experience
-- Casual yet engaging gameplay
-- "One more run" addictiveness
-- Satisfying power progression
-- Clear visual feedback for all actions
-- Responsive controls (keyboard + touch)
-- Leaderboard/achievements (optional)
-
----
-
-## 🏗️ Recommended Project Structure
-
-### Option 1: Modern Vanilla JS (Recommended for MVP)
-```
-lane-survivor/
-├── index.html                 # Entry point
-├── README.md                  # Project overview
-├── package.json               # Build tools (optional)
-│
-├── src/
-│   ├── main.js               # Game initialization
-│   ├── config.js             # Game constants & settings
-│   │
-│   ├── core/
-│   │   ├── Game.js           # Main game loop & state
-│   │   ├── Renderer.js       # All canvas drawing
-│   │   ├── InputManager.js   # Keyboard & touch input
-│   │   └── AudioManager.js   # Sound effects (future)
-│   │
-│   ├── entities/
-│   │   ├── Player.js         # Player class
-│   │   ├── Enemy.js          # Enemy class
-│   │   ├── Bullet.js         # Bullet class
-│   │   ├── XPOrb.js          # XP orb class
-│   │   └── PowerUp.js        # Power-up class
-│   │
-│   ├── systems/
-│   │   ├── UpgradeSystem.js  # Level-up upgrades
-│   │   ├── DifficultySystem.js # Difficulty scaling
-│   │   ├── CollisionSystem.js  # Collision detection
-│   │   ├── SpawnSystem.js    # Enemy spawning
-│   │   └── ParticleSystem.js # Visual effects
-│   │
-│   ├── ui/
-│   │   ├── UIManager.js      # UI updates
-│   │   ├── Modal.js          # Modal dialogs
-│   │   ├── HealthBar.js      # Health display
-│   │   └── SettingsPanel.js  # Settings UI
-│   │
-│   ├── analytics/
-│   │   ├── GameLogger.js     # Logging system
-│   │   ├── StatsTracker.js   # Real-time stats
-│   │   └── AnalyticsDashboard.js # View logs (future)
-│   │
-│   └── utils/
-│       ├── math.js           # Math helpers
-│       ├── storage.js        # LocalStorage wrapper
-│       └── constants.js      # Game constants
-│
-├── assets/
-│   ├── sounds/               # Sound effects (future)
-│   └── sprites/              # Sprite sheets (future)
-│
-├── styles/
-│   ├── main.css              # Main styles
-│   ├── game.css              # Game canvas styles
-│   └── ui.css                # UI component styles
-│
-└── dist/                     # Built files (if using bundler)
-```
-
-### Option 2: React/Vue Framework (For Future Scaling)
-Good if you want:
-- More complex UI (menus, stats dashboard, etc.)
-- Component reusability
-- State management (Redux/Vuex)
-- Easier testing
-
-**Recommendation: Start with Option 1**, migrate to framework later if needed.
+1. **Visual Identity** – Port the CRT neon styling, particle systems, and screen shake into the modern renderer while keeping retina-responsiveness.
+2. **UI Surfaces** – Rebuild the health hearts, stat panels, notifications, upgrade modal, settings drawer, and game-over summary using the `HUDController`.
+3. **Gameplay Systems** – Reinstate XP orbs, upgrade drafts, power-ups, enemy cohorts, and difficulty scaling with cleanly separated modules.
+4. **Telemetry & Settings** – Restore the logging pipeline, run history, and toggleable modifiers; add TypeScript-ready interfaces for future analytics surfaces.
+5. **Polish & Expansion** – Once parity exists, push beyond with fresh upgrades, enemy archetypes, and improved balance curves.
 
 ---
 
 ## 🚀 Development Roadmap
 
-### Phase 1: Refactor & Foundation (Week 1-2)
-**Goal: Organize code without changing functionality**
+### Phase 0: Neon Shell Restoration (Week 1)
+**Goal: Port the CRT aesthetic + HUD structure into the modular build**
 
-1. **Split into modules**
-   - Extract classes: Player, Enemy, Bullet, etc.
-   - Separate rendering from game logic
-   - Create systems: Collision, Spawn, Difficulty
-   - Move UI code to separate files
+1. **Canvas presentation**
+   - Enable pixelated rendering (`ctx.imageSmoothingEnabled = false`)
+   - Recreate border, drop shadow, and background gradients from the legacy file
+   - Add configurable screen flash + shake helpers to `Renderer`
 
-2. **Add health system**
-   - Player has 5 HP by default
-   - Invulnerability frames after hit (2 seconds)
-   - Visual feedback (flash red, shake screen)
-   - Health power-ups drop from enemies
-   - Health upgrade option
+2. **HUD parity**
+   - Recreate health hearts, stat cards, and run status panel inside `HUDController`
+   - Style HUD cards using the GitHub-dark palette and neon accents
+   - Ensure responsive breakpoints match both desktop and touch layouts
 
-3. **Improve project setup**
-   - Add package.json for tooling
-   - Use ES6 modules
-   - Add simple build script (optional: Vite/Parcel)
-   - Set up local dev server
+3. **Modal scaffolding**
+   - Introduce modal primitives (upgrade + game over) using semantic HTML and CSS animations
+   - Wire up keyboard and touch interactions for opening/dismissing modals
+4. **Engine integration**
+   - Reuse the new `ParticleSystem` (`src/systems/particles.js`) and `ForceField` (`src/physics/forces.js`) to drive CRT haze, bursts, and camera shake
+   - Keep effects testable by emitting bursts on player fire and enemy destruction before porting the full legacy library
 
-**Deliverable:** Clean, organized codebase with health system
+**Deliverable:** Modern build that *looks* like the enhanced HTML version, with responsive HUD + modal components in place.
 
 ---
 
-### Phase 2: Balance & Polish (Week 3-4)
-**Goal: Make the game feel great**
+### Phase 1: Systems Reintegration (Week 2-3)
+**Goal: Restore the core survivor loop from commit `2ed446b`**
 
-1. **Gameplay balance**
-   - Use collected logs to tune difficulty
-   - Adjust spawn rates, enemy HP, player damage
-   - Test different upgrade paths
-   - Aim for 3-5 minute average runs
+1. **XP & upgrades**
+   - Recreate XP orb drops, collection, and level thresholds
+   - Port the upgrade deck (damage, multishot, pierce, economy, cooldowns) into a module-driven system
+   - Rebuild the upgrade draft flow (3 choices, rarity weighting, reroll logic)
+   - ✅ Power-up framework landed (`PowerUpManager`) with runtime stat modifiers
 
-2. **Juice & feel**
-   - Screen shake on hits
-   - Camera zoom effects on level up
-   - Better particle effects
-   - Smooth transitions
-   - Impact frames (brief pause on hit)
+2. **Enemy & spawn variety**
+   - Implement enemy cohorts and wave scripting from the legacy build
+   - Add spawn difficulty scaling and elite modifiers
+   - Reinstate boss timer hooks (every ~90 seconds)
 
-3. **Sound effects**
-   - Shoot, hit, level up, game over
-   - Background music (optional)
-   - Use Web Audio API or Howler.js
+3. **Game flow**
+   - Level-up events pause gameplay, launch the modal, and resume cleanly
+   - Game-over modal summarizes stats, upgrades, and unlocks
+   - Notifications surface in a queue (damage taken, upgrades acquired, milestones)
 
-4. **Visual improvements**
-   - Better sprites/graphics
-   - Animated backgrounds
-   - Enemy variety (different types)
-   - Boss enemies every 10 levels
-
-**Deliverable:** Polished, satisfying gameplay loop
+**Deliverable:** Feature parity with the neon legacy build, running on the modular architecture.
 
 ---
 
-### Phase 3: Content & Features (Week 5-6)
-**Goal: Add depth and replayability**
+### Phase 2: Feel & Telemetry (Week 4)
+**Goal: Make every interaction punchy while capturing actionable data**
 
-1. **More content**
-   - 5-10 new upgrades
-   - 3-5 enemy types
-   - 2-3 boss fights
-   - New power-ups
-   - Special events/waves
+1. **Moment-to-moment feel**
+   - Particle bursts for hits, kills, XP collection, and upgrades
+   - Hit-stop + easing tweaks on big impacts
+   - Audio hooks (fire, hit, level up, enemy spawn) using Web Audio API
 
-2. **Meta progression**
-   - Unlock system (new upgrades/characters)
-   - Persistent stats across runs
-   - Achievement system
-   - Daily challenges
+2. **Analytics revival**
+   - Port the run logger (LocalStorage + downloadable JSON)
+   - Add session timeline charting hooks for future dashboards
+   - Track upgrade pick rates, survival duration, damage taken, XP per minute
 
-3. **Enhanced logging**
-   - In-game stats dashboard
-   - Run history viewer
-   - Build sharing (export/import builds)
-   - Heatmaps of death locations
+3. **Settings panel**
+   - Recreate toggle surface (auto-collect, damage numbers, colorblind mode stub)
+   - Ensure settings persist and integrate with `GameEngine` on boot
 
-**Deliverable:** Rich content with replay value
+**Deliverable:** Juicy gameplay with instrumentation ready for balance passes.
+
+---
+
+### Phase 3: Content & Progression (Week 5-6)
+**Goal: Surpass the legacy build with fresh content and meta hooks**
+
+1. **Upgrade expansion**
+   - Add 5-8 new upgrades (synergies, defensive options, movement tech)
+   - Create rare/legendary tier logic with unique visuals
+   - Balance upgrade economy using telemetry
+
+2. **Enemy ecosystem**
+   - Ship at least 3 enemy archetypes (rushers, ranged, shields)
+   - Introduce mini-boss behaviors and telegraphed attacks
+   - Add lane hazards or environmental modifiers
+
+3. **Meta progression**
+   - Persistent run tracker and achievements
+   - Unlockable mutators or loadouts
+   - Daily challenge seed system (stretch)
+
+**Deliverable:** Replayable build with multiple viable strategies and long-term goals.
 
 ---
 
 ### Phase 4: Platform & Distribution (Week 7-8)
-**Goal: Make it accessible to everyone**
+**Goal: Launch a polished build across desktop + mobile surfaces**
 
-1. **Mobile support**
-   - Touch controls (virtual joystick or swipe)
-   - Responsive canvas sizing
-   - Mobile-optimized UI
-   - PWA setup for install
+1. **Mobile excellence**
+   - Tune touch controls, hit targets, and vibration feedback
+   - Validate performance on Pi 2B, Android slabs, foldables, and iPad
+   - Add install prompts (PWA manifest + service worker if desired)
 
-2. **Social features**
-   - Online leaderboards (Firebase/Supabase)
-   - Share scores to social media
-   - Optional: Multiplayer co-op mode
+2. **Social + sharing**
+   - Export/share run summaries (image or JSON)
+   - Leaderboard proof-of-concept (local first, remote if time allows)
+   - Trailer capture and marketing copy
 
 3. **Distribution**
-   - Deploy to GitHub Pages / Netlify
-   - Submit to itch.io / Newgrounds
-   - Create presskit / trailer
-   - SEO optimization
+   - Deploy to GitHub Pages / Netlify from the static bundle
+   - Submit to itch.io / Newgrounds with legacy build notes
+   - Maintain release notes and update cadence
 
-**Deliverable:** Published, accessible game
+**Deliverable:** Published, accessible, and market-ready neon survivor.
 
 ---
 
@@ -417,36 +331,30 @@ function resizeCanvas() {
 
 ### What to Do Right Now
 
-1. **Set up project structure**
-   ```bash
-   mkdir lane-survivor
-   cd lane-survivor
-   npm create vite@latest . -- --template vanilla
-   npm install
-   ```
+1. **Diff & catalog legacy systems**
+   - Annotate `lane-shooter-enhanced.html` (commit `2ed446b`) to list UI panels, systems, and helper functions.
+   - Identify which modules in `src/` will own each feature (e.g., upgrade drafting → new `systems/upgrade.js`).
+   - Capture the color palette, easing values, and constants for reuse in `config.js`.
 
-2. **Create core classes**
-   - Start with `Game.js`, `Player.js`, `Enemy.js`
-   - Move rendering to `Renderer.js`
-   - Extract constants to `config.js`
+2. **Port the neon presentation**
+   - Update `Renderer` to disable image smoothing, add glow helpers, and expose screen shake API.
+   - Mirror the legacy CSS (borders, drop shadows, cards) inside `styles/main.css` while keeping responsive rules.
+   - Replace placeholder HUD markup in `index.html` to support stat icons and modal containers.
 
-3. **Add health system**
-   - Modify player to have HP
-   - Add invulnerability frames
-   - Create health UI component
-   - Add health power-ups
+3. **Rebuild modal + notification framework**
+   - Create modal controller modules for upgrades and game-over flows.
+   - Implement notification queue with fade-in/out transitions and tie into existing HUD update loop.
+   - Ensure keyboard/touch navigation matches the legacy feel (arrow keys, enter, tap).
 
-4. **Test and balance**
-   - Play 20+ runs
-   - Log all data
-   - Analyze death patterns
-   - Adjust difficulty accordingly
+4. **Reintroduce XP + upgrade loop**
+   - Implement XP orb entities, leveling thresholds, and power curve in `GameState`.
+   - Port upgrade data definitions from the legacy file and expose them via a draft service.
+   - Wire level-up flow to pause engine ticks, present choices, and apply stat modifications.
 
-5. **Document everything**
-   - Add JSDoc comments
-   - Create API documentation
-   - Write contribution guide
-   - Update README with setup
+5. **Restore telemetry + settings**
+   - Bring back run logger, ensuring it plays nicely with modular state (consider `analytics/logger.js`).
+   - Recreate settings drawer with persistence (auto-collect, damage numbers, colorblind mode stub).
+   - Add regression tests or manual checklists to validate logging across desktop + mobile sessions.
 
 ---
 
@@ -533,28 +441,24 @@ When opening to contributors:
 ## 🎯 TL;DR - Quick Start Plan
 
 1. **This Week:**
-   - Set up Vite project structure
-   - Split code into modules (Game, Player, Enemy, etc.)
-   - Add health system (5 HP, invulnerability frames)
-   - Test balance with health system
+   - Port the neon CRT styling into the modular renderer.
+   - Recreate HUD stat cards, health hearts, and modal containers.
+   - Validate layout on desktop, tablet, and foldable breakpoints.
 
 2. **Next Week:**
-   - Add sound effects
-   - Polish visual effects
-   - Create 5 more upgrades
-   - Add enemy variety
+   - Restore XP orb economy and level thresholds.
+   - Implement upgrade draft modal with at least 10 upgrade definitions.
+   - Bring back notifications and pause flow during draft selection.
 
 3. **Following Week:**
-   - Add mobile support
-   - Create analytics dashboard
-   - Implement meta progression
-   - Prepare for launch
+   - Reintroduce particle systems, hit-stop, and audio cues.
+   - Hook up run logger + settings drawer for telemetry.
+   - Use captured data to rebalance spawn curves and upgrade weights.
 
-4. **Launch:**
-   - Deploy to GitHub Pages
-   - Submit to itch.io
-   - Share on Reddit/Twitter
-   - Gather feedback and iterate
+4. **Launch Prep:**
+   - Add new upgrades/enemy archetypes to surpass the legacy build.
+   - Capture trailer/marketing assets and publish the static bundle.
+   - Gather playtest feedback and adapt the roadmap for post-launch updates.
 
 ---
 
@@ -583,36 +487,16 @@ Don't chase perfection - ship and iterate!
 
 ---
 
-## 🚦 Current Priority: Health System
+## 🚦 Current Priority: Neon Shell & Upgrade Scaffold
 
-Based on your playtest (13 second survival with instant death), the **immediate priority** is:
+The restoration journey hinges on two immediate wins:
 
-### Health System Implementation
-```javascript
-// Add to game state
-health: 5,
-maxHealth: 5,
-invulnerable: false,
-invulnerableUntil: 0,
+- **Visual grounding:** Port the neon canvas treatments, HUD elements, and modal shell so future gameplay work has the correct presentation baseline.
+- **Upgrade-ready architecture:** Sketch the upgrade data model, modal flow, and state hooks now; other systems (XP, enemies, telemetry) will plug into it.
+- **Documentation trail:** Capture decisions and mappings back to `lane-shooter-enhanced.html` so contributors can follow the same blueprint.
 
-// Collision with enemy
-if (!game.invulnerable) {
-  game.health--;
-  game.invulnerable = true;
-  game.invulnerableUntil = Date.now() + 2000; // 2 sec immunity
-  
-  // Visual feedback
-  screenShake();
-  player.flash = 30; // Flash frames
-  
-  if (game.health <= 0) {
-    gameOver('Health depleted');
-  }
-}
-```
-
-This single change will dramatically improve the experience!
+Nailing these sets the stage for the rest of the roadmap and keeps the modern build aligned with the cool graphics and gameplay we’re reviving.
 
 ---
 
-**Ready to start?** Let me know and I can help you set up the project structure and implement the health system first!
+**Ready to dig in?** Reach out when you want pairing support on porting the neon renderer or drafting the upgrade system.

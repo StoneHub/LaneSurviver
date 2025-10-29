@@ -39,18 +39,36 @@ export class Player {
   }
 
   fire() {
-    if (!this.canFire()) return false;
-    const { lane } = this.state.player;
+    if (!this.canFire()) return null;
+    const player = this.state.player;
+    const { lane } = player;
     const muzzleY = Math.max(
       0,
-      this.state.player.y - GAME_CONFIG.projectile.height - 6,
+      player.y - GAME_CONFIG.projectile.height - 6,
     );
-    this.state.projectiles.push({
-      lane,
-      y: muzzleY,
-      speed: GAME_CONFIG.player.projectileSpeed,
-    });
-    this.state.player.cooldown = GAME_CONFIG.player.fireCooldown;
-    return true;
+
+    const bulletCount = Math.max(1, player.bulletCount | 0);
+    const spread = player.spread ?? 0;
+    const centerIndex = (bulletCount - 1) / 2;
+
+    for (let i = 0; i < bulletCount; i += 1) {
+      const offsetIndex = i - centerIndex;
+      const offset = offsetIndex * spread;
+      this.state.projectiles.push({
+        lane,
+        offset,
+        y: muzzleY,
+        speed: player.projectileSpeed,
+        pierce: player.pierce ?? 0,
+        hits: 0,
+        aim: {
+          targetLane: lane,
+          strength: player.autoAimStrength ?? 1,
+        },
+      });
+    }
+
+    player.cooldown = player.fireCooldown;
+    return { lane, muzzleY };
   }
 }
