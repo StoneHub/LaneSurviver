@@ -14,6 +14,9 @@ export class GameEngine {
     particles,
     forces,
     powerUps,
+    xpManager,
+    upgradeManager,
+    upgradeModal,
     autoFire = false,
     onFire = null,
     onTick,
@@ -25,6 +28,9 @@ export class GameEngine {
     this.particles = particles;
     this.forces = forces;
     this.powerUps = powerUps;
+    this.xpManager = xpManager;
+    this.upgradeManager = upgradeManager;
+    this.upgradeModal = upgradeModal;
     this.autoFire = autoFire;
     this.onFire = onFire;
     this.onTick = onTick;
@@ -62,6 +68,18 @@ export class GameEngine {
     this.requestId = requestAnimationFrame((next) => this.loop(next));
   }
 
+  showUpgradeModal() {
+    this.stop();
+    const options = this.upgradeManager.getUpgradeOptions();
+    this.upgradeModal.setPlayerState(this.state.player);
+    this.upgradeModal.show(options);
+  }
+
+  applyUpgrade(key) {
+    this.upgradeManager.applyUpgrade(key);
+    this.start();
+  }
+
   update(delta) {
     if (this.particles) {
       this.particles.update(delta);
@@ -71,6 +89,11 @@ export class GameEngine {
     }
     if (this.powerUps) {
       this.powerUps.update(delta);
+    }
+    if (this.xpManager) {
+      if (this.xpManager.update(delta)) {
+        this.showUpgradeModal();
+      }
     }
 
     if (this.state.isGameOver) {
@@ -116,6 +139,18 @@ export class GameEngine {
       const enemy = this.state.enemies[i];
       enemy.y += enemy.speed * seconds;
 
+      const playerX = laneCenter(this.state.player.lane, this.state.player.laneProgress);
+      const enemyX = laneCenter(enemy.lane);
+      if (Math.abs(enemy.y - this.state.player.y) < GAME_CONFIG.player.height / 2 && Math.abs(enemyX - playerX) < GAME_CONFIG.player.width / 2) {
+        this.state.damagePlayer(GAME_CONFIG.damage.onHit, {
+          cause: 'collision',
+          lane: enemy.lane,
+          elapsed: this.state.elapsed,
+        });
+        this.state.enemies.splice(i, 1);
+        continue;
+      }
+
       if (enemy.y >= PLAYFIELD_HEIGHT - enemyHeight) {
         this.state.enemies.splice(i, 1);
         this.spawnLeakEffect(enemy.lane, enemy.y);
@@ -143,6 +178,9 @@ export class GameEngine {
           this.state.enemies.splice(i, 1);
           this.state.addScore(GAME_CONFIG.difficulty.scorePerEnemy);
           this.spawnEnemyDestroyedEffect(enemy.lane, enemy.y + enemyHeight / 2);
+          if (this.xpManager) {
+            this.xpManager.spawnXP(laneCenter(enemy.lane), enemy.y + enemyHeight / 2);
+          }
           if (this.powerUps) {
             this.powerUps.maybeDrop({ lane: enemy.lane, y: enemy.y + enemyHeight / 2 });
           }
@@ -168,6 +206,9 @@ export class GameEngine {
     if (renderer.drawPowerUps) {
       renderer.drawPowerUps(state.powerUps);
     }
+    if (renderer.drawXPOrbs) {
+      renderer.drawXPOrbs(state.xpOrbs);
+    }
     renderer.drawProjectiles(state.projectiles);
     renderer.drawPlayer(state.player);
     if (particles) {
@@ -181,18 +222,10 @@ export class GameEngine {
     this.particles.emitBurst({
       x: laneCenter(lane),
       y: Math.max(0, impactY),
-      count: 14,
-      palette: ['#ff4f6d', '#ffd1dc', '#ff7b93'],
-      speed: [150, 260],
-      life: [220, 360],
-      size: [2.2, 4.8],
-      gravity: 300,
-      drag: 0.88,
-      blend: 'lighter',
-      fadePower: 1.4,
+      ...GAME_CONFIG.effects.enemyDestroyed,
     });
     if (this.forces) {
-      this.forces.addShake({ magnitude: 6, duration: 180 });
+      this.forces.addShake(GAME_CONFIG.effects.enemyDestroyedShake);
     }
   }
 
@@ -201,18 +234,10 @@ export class GameEngine {
     this.particles.emitBurst({
       x: laneCenter(lane),
       y: Math.min(PLAYFIELD_HEIGHT, Math.max(0, impactY)),
-      count: 18,
-      palette: ['#f060d0', '#ff96e6', '#ffffff'],
-      speed: [120, 240],
-      life: [240, 420],
-      size: [2.5, 5.5],
-      gravity: 360,
-      drag: 0.86,
-      blend: 'lighter',
-      fadePower: 1.6,
+      ...GAME_CONFIG.effects.leak,
     });
     if (this.forces) {
-      this.forces.addShake({ magnitude: 8, duration: 240 });
+      this.forces.addShake(GAME_CONFIG.effects.leakShake);
     }
   }
 

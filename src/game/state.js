@@ -14,6 +14,8 @@ export class GameState {
         GAME_CONFIG.playfieldHeight -
         GAME_CONFIG.canvasPadding -
         GAME_CONFIG.player.height,
+      invulnerable: false,
+      invulnerableUntil: 0,
       health: GAME_CONFIG.player.maxHealth,
       cooldown: 0,
       laneProgress: 0,
@@ -22,6 +24,9 @@ export class GameState {
       bulletCount: 1,
       spread: 0.18,
       pierce: 0,
+      level: 1,
+      xp: 0,
+      xpToNext: 10,
       autoAimStrength: GAME_CONFIG.player.autoAimStrength ?? 1.2,
     };
     this.difficultyLevel = 1;
@@ -30,6 +35,7 @@ export class GameState {
     this.spawnTimer = 0;
     this.enemies = [];
     this.projectiles = [];
+    this.xpOrbs = [];
     this.powerUps = [];
     this.lastSpawn = 0;
     this.burstTimer = 0;
@@ -39,6 +45,7 @@ export class GameState {
     this.lastDamage = null;
     this.deathInfo = null;
     this.isGameOver = false;
+    this.damageNumbers = [];
   }
 
   addScore(amount) {
@@ -46,6 +53,8 @@ export class GameState {
   }
 
   damagePlayer(amount, context = {}) {
+    if (this.player.invulnerable) return;
+
     const previousHealth = this.player.health;
     const elapsed = context.elapsed ?? this.elapsed ?? 0;
     const nextHealth = clamp(
@@ -65,6 +74,8 @@ export class GameState {
     };
 
     this.player.health = nextHealth;
+    this.player.invulnerable = true;
+    this.player.invulnerableUntil = elapsed + GAME_CONFIG.player.invulnerabilityDuration;
     this.lastDamage = entry;
     this.damageLog.push(entry);
 

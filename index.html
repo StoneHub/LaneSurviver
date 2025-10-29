@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Lane Survivor</title>
     <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/modal.css" />
   </head>
   <body>
     <div id="app">
@@ -71,5 +72,13 @@
       <footer>Ready for static hosting — copy to any web server or run <code>python -m http.server</code> locally.</footer>
     </div>
     <script type="module" src="src/main.js"></script>
+
+    <div id="upgradeModal" class="modal">
+      <div class="upgrade-panel">
+        <div class="upgrade-title">LEVEL UP!</div>
+        <div class="upgrade-subtitle">Choose your upgrade</div>
+        <div class="upgrade-options"></div>
+      </div>
+    </div>
   </body>
 </html>

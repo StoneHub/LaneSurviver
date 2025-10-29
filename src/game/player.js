@@ -29,6 +29,10 @@ export class Player {
       player.laneProgress = 0;
     }
 
+    if (player.invulnerable && this.state.elapsed > player.invulnerableUntil) {
+      player.invulnerable = false;
+    }
+
     if (player.cooldown > 0) {
       player.cooldown -= delta;
     }

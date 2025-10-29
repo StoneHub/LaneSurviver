@@ -10,6 +10,9 @@ import { ResponsiveLayout } from './ui/responsive.js';
 import { ParticleSystem } from './systems/particles.js';
 import { ForceField } from './physics/forces.js';
 import { PowerUpManager } from './game/powerup.js';
+import { XPManager } from './game/xp.js';
+import { UpgradeManager } from './game/upgrades.js';
+import { UpgradeModal } from './ui/upgradeModal.js';
 
 export class LaneSurvivorApp {
   constructor({ canvas, hudRoot, controlsRoot }) {
@@ -31,6 +34,13 @@ export class LaneSurvivorApp {
       state: this.state,
       particles: this.particles,
     });
+    this.xpManager = new XPManager(this.state);
+
+    this.upgradeManager = new UpgradeManager(this.state);
+    this.upgradeModal = new UpgradeModal(
+      document.getElementById('upgradeModal'),
+      (key) => this.engine.applyUpgrade(key)
+    );
 
     this.engine = new GameEngine({
       state: this.state,
@@ -40,6 +50,9 @@ export class LaneSurvivorApp {
       particles: this.particles,
       forces: this.forces,
       powerUps: this.powerUps,
+      xpManager: this.xpManager,
+      upgradeManager: this.upgradeManager,
+      upgradeModal: this.upgradeModal,
       autoFire: true,
       onFire: () => this.performFire(),
       onTick: (state) => this.hud.update(state),
@@ -127,19 +140,9 @@ export class LaneSurvivorApp {
     this.particles.emitBurst({
       x: laneCenter,
       y: muzzleY,
-      count: 8,
-      palette: ['#ffe566', '#fff6a8', '#ffb347'],
-      speed: [160, 240],
-      angle: -Math.PI / 2,
-      spread: Math.PI / 6,
-      life: [140, 220],
-      size: [1.5, 3.5],
-      gravity: 200,
-      drag: 0.82,
-      blend: 'lighter',
-      fadePower: 1.2,
+      ...GAME_CONFIG.effects.playerFire,
     });
 
-    this.forces.addShake({ magnitude: 3, duration: 90 });
+    this.forces.addShake(GAME_CONFIG.effects.playerFireShake);
   }
 }
