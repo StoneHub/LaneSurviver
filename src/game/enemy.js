@@ -49,10 +49,18 @@ export class EnemySpawner {
       GAME_CONFIG.enemy.baseSpeed * (1 + this.state.elapsed / 60000),
     );
     const velocity = randBetween(speed * 0.9, speed * 1.2);
+    const sizeVariant = this.selectSizeVariant();
+
     this.state.enemies.push({
       lane,
-      y: -GAME_CONFIG.enemy.height,
+      y: -GAME_CONFIG.enemy.height * sizeVariant.scale,
       speed: velocity,
+      size: sizeVariant.scale,
+      canMove: sizeVariant.canMove,
+      moveSpeed: sizeVariant.moveSpeed,
+      lateralOffset: 0,
+      lateralDirection: Math.random() > 0.5 ? 1 : -1,
+      lateralPhase: Math.random() * Math.PI * 2,
     });
   }
 
@@ -92,13 +100,36 @@ export class EnemySpawner {
           GAME_CONFIG.enemy.baseSpeed * burstSpeedBoost,
         );
         const velocity = randBetween(speed * 0.95, speed * 1.3);
+        const sizeVariant = this.selectSizeVariant();
+
         this.state.enemies.push({
           lane,
-          y: -enemyHeight - i * verticalSpacing,
+          y: -enemyHeight * sizeVariant.scale - i * verticalSpacing,
           speed: velocity,
+          size: sizeVariant.scale,
+          canMove: sizeVariant.canMove,
+          moveSpeed: sizeVariant.moveSpeed,
+          lateralOffset: 0,
+          lateralDirection: Math.random() > 0.5 ? 1 : -1,
+          lateralPhase: Math.random() * Math.PI * 2,
         });
       }
     }
+  }
+
+  selectSizeVariant() {
+    const variants = GAME_CONFIG.enemy.sizeVariants;
+    const totalWeight = variants.reduce((sum, v) => sum + v.weight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (const variant of variants) {
+      random -= variant.weight;
+      if (random <= 0) {
+        return variant;
+      }
+    }
+
+    return variants[0]; // Fallback
   }
 }
 

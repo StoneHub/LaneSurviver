@@ -55,24 +55,73 @@ export class Player {
     const spread = player.spread ?? 0;
     const centerIndex = (bulletCount - 1) / 2;
 
-    for (let i = 0; i < bulletCount; i += 1) {
-      const offsetIndex = i - centerIndex;
-      const offset = offsetIndex * spread;
-      this.state.projectiles.push({
-        lane,
-        offset,
-        y: muzzleY,
-        speed: player.projectileSpeed,
-        pierce: player.pierce ?? 0,
-        hits: 0,
-        aim: {
-          targetLane: lane,
-          strength: player.autoAimStrength ?? 1,
-        },
-      });
+    // Determine target lanes
+    const targetLanes = [lane];
+    if (player.crossLaneEnabled && this.isLaneUnderPressure(lane)) {
+      const range = player.crossLaneRange || 1;
+      for (let offset = 1; offset <= range; offset++) {
+        if (lane - offset >= 0) targetLanes.push(lane - offset);
+        if (lane + offset < GAME_CONFIG.lanes) targetLanes.push(lane + offset);
+      }
     }
+
+    // Fire at each target lane
+    targetLanes.forEach((targetLane) => {
+      for (let i = 0; i < bulletCount; i += 1) {
+        const offsetIndex = i - centerIndex;
+        const offset = offsetIndex * spread;
+
+        // Advanced targeting: use best target across all lanes if enabled
+        const aimTargetLane = player.advancedTargeting
+          ? this.findBestTargetLane(targetLane, muzzleY)
+          : targetLane;
+
+        this.state.projectiles.push({
+          lane: targetLane,
+          offset,
+          y: muzzleY,
+          speed: player.projectileSpeed,
+          pierce: player.pierce ?? 0,
+          hits: 0,
+          aim: {
+            targetLane: aimTargetLane,
+            strength: player.autoAimStrength ?? 1,
+            crossLane: player.advancedTargeting,
+          },
+        });
+      }
+    });
 
     player.cooldown = player.fireCooldown;
     return { lane, muzzleY };
+  }
+
+  isLaneUnderPressure(lane) {
+    const pressureThreshold = GAME_CONFIG.playfieldHeight * 0.65; // Bottom 35% of screen
+    let enemiesInDangerZone = 0;
+
+    for (const enemy of this.state.enemies) {
+      if (enemy.lane === lane && enemy.y >= pressureThreshold) {
+        enemiesInDangerZone++;
+      }
+    }
+
+    return enemiesInDangerZone >= 2;
+  }
+
+  findBestTargetLane(currentLane, projectileY) {
+    // Find the lane with the closest enemy
+    let bestLane = currentLane;
+    let minDistance = Infinity;
+
+    for (const enemy of this.state.enemies) {
+      const distance = Math.abs(enemy.y - projectileY);
+      if (distance < minDistance && enemy.y < projectileY) {
+        minDistance = distance;
+        bestLane = enemy.lane;
+      }
+    }
+
+    return bestLane;
   }
 }

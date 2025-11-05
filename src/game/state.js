@@ -28,6 +28,9 @@ export class GameState {
       xp: 0,
       xpToNext: 10,
       autoAimStrength: GAME_CONFIG.player.autoAimStrength ?? 1.2,
+      crossLaneEnabled: false,
+      crossLaneRange: 0,
+      advancedTargeting: false,
     };
     this.difficultyLevel = 1;
     this.score = 0;

@@ -35,6 +35,31 @@ export const UPGRADES = {
     level: 0,
     apply: (player) => { player.autoAimStrength *= 1.5; },
   },
+  crossLaneShot: {
+    name: 'Cross-Lane Targeting',
+    desc: (player) => {
+      const current = player.crossLaneRange || 0;
+      return current === 0
+        ? 'Shoot into neighbor lanes when under pressure'
+        : `Expand range (${current} -> ${current + 1} lanes)`;
+    },
+    level: 0,
+    max: 2,
+    apply: (player) => {
+      player.crossLaneRange = (player.crossLaneRange || 0) + 1;
+      player.crossLaneEnabled = true;
+    },
+  },
+  advancedTargeting: {
+    name: 'Advanced Targeting',
+    desc: () => 'Auto-aim works across lanes (Requires Cross-Lane)',
+    level: 0,
+    max: 1,
+    canSelect: (player) => player.crossLaneEnabled === true,
+    apply: (player) => {
+      player.advancedTargeting = true;
+    },
+  },
 };
 
 export class UpgradeManager {
@@ -46,7 +71,9 @@ export class UpgradeManager {
   getUpgradeOptions() {
     const available = Object.keys(this.upgrades).filter(k => {
       const u = this.upgrades[k];
-      return !u.max || u.level < u.max;
+      const notMaxed = !u.max || u.level < u.max;
+      const canSelect = !u.canSelect || u.canSelect(this.state.player);
+      return notMaxed && canSelect;
     });
 
     const selected = [];
