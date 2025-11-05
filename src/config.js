@@ -73,6 +73,15 @@ export const GAME_CONFIG = {
     burstMultiplier: 2.1,
     burstInterval: 12000,
     burstDuration: 2200,
+    // Enemy size variations
+    sizeVariants: [
+      { scale: 0.6, weight: 0.3, canMove: true, moveSpeed: 45 },   // Small, nimble
+      { scale: 0.8, weight: 0.25, canMove: true, moveSpeed: 30 },  // Medium-small
+      { scale: 1.0, weight: 0.25, canMove: false, moveSpeed: 0 },  // Normal, no lateral movement
+      { scale: 1.3, weight: 0.15, canMove: false, moveSpeed: 0 },  // Large, no lateral movement
+      { scale: 1.6, weight: 0.05, canMove: false, moveSpeed: 0 },  // Extra large, no lateral movement
+    ],
+    lateralMoveRange: 0.35, // Max lateral movement within lane (fraction of lane width)
   },
   difficulty: {
     rampInterval: 10000,

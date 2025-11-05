@@ -139,9 +139,23 @@ export class GameEngine {
       const enemy = this.state.enemies[i];
       enemy.y += enemy.speed * seconds;
 
+      // Lateral movement for small enemies
+      if (enemy.canMove && enemy.moveSpeed > 0) {
+        enemy.lateralPhase += seconds * 1.5;
+        const maxOffset = GAME_CONFIG.enemy.lateralMoveRange;
+        const targetOffset = Math.sin(enemy.lateralPhase) * maxOffset * enemy.lateralDirection;
+        // Smooth approach to target
+        enemy.lateralOffset += (targetOffset - enemy.lateralOffset) * seconds * 3;
+      }
+
       const playerX = laneCenter(this.state.player.lane, this.state.player.laneProgress);
-      const enemyX = laneCenter(enemy.lane);
-      if (Math.abs(enemy.y - this.state.player.y) < GAME_CONFIG.player.height / 2 && Math.abs(enemyX - playerX) < GAME_CONFIG.player.width / 2) {
+      const enemyX = laneCenter(enemy.lane, enemy.lateralOffset || 0);
+      const enemySize = enemy.size || 1;
+      const enemyWidth = GAME_CONFIG.enemy.width * enemySize;
+      const enemyActualHeight = GAME_CONFIG.enemy.height * enemySize;
+
+      if (Math.abs(enemy.y - this.state.player.y) < (GAME_CONFIG.player.height + enemyActualHeight) / 2 &&
+          Math.abs(enemyX - playerX) < (GAME_CONFIG.player.width + enemyWidth) / 2) {
         this.state.damagePlayer(GAME_CONFIG.damage.onHit, {
           cause: 'collision',
           lane: enemy.lane,
@@ -151,9 +165,9 @@ export class GameEngine {
         continue;
       }
 
-      if (enemy.y >= PLAYFIELD_HEIGHT - enemyHeight) {
+      if (enemy.y >= PLAYFIELD_HEIGHT - enemyActualHeight) {
         this.state.enemies.splice(i, 1);
-        this.spawnLeakEffect(enemy.lane, enemy.y);
+        this.spawnLeakEffect(enemy.lane, enemy.y, enemy.lateralOffset || 0);
         this.state.damagePlayer(GAME_CONFIG.damage.onLeak, {
           cause: 'leak',
           lane: enemy.lane,
@@ -168,21 +182,29 @@ export class GameEngine {
 
       for (let j = this.state.projectiles.length - 1; j >= 0; j -= 1) {
         const projectile = this.state.projectiles[j];
-        if (projectile.lane !== enemy.lane) continue;
+
+        // Calculate actual positions for collision detection
+        const projectileX = laneCenter(projectile.lane, projectile.offset || 0);
+        const projectileWidth = GAME_CONFIG.projectile.width;
+
+        // Check both vertical and horizontal overlap
         const enemyTop = enemy.y;
-        const enemyBottom = enemy.y + enemyHeight;
+        const enemyBottom = enemy.y + enemyActualHeight;
         const projectileTop = projectile.y;
         const projectileBottom = projectile.y + projectileHeight;
-        const overlap = enemyBottom >= projectileTop && projectileBottom >= enemyTop;
-        if (overlap) {
+
+        const verticalOverlap = enemyBottom >= projectileTop && projectileBottom >= enemyTop;
+        const horizontalOverlap = Math.abs(enemyX - projectileX) < (enemyWidth + projectileWidth) / 2;
+
+        if (verticalOverlap && horizontalOverlap) {
           this.state.enemies.splice(i, 1);
           this.state.addScore(GAME_CONFIG.difficulty.scorePerEnemy);
-          this.spawnEnemyDestroyedEffect(enemy.lane, enemy.y + enemyHeight / 2);
+          this.spawnEnemyDestroyedEffect(enemy.lane, enemy.y + enemyActualHeight / 2, enemy.lateralOffset || 0);
           if (this.xpManager) {
-            this.xpManager.spawnXP(laneCenter(enemy.lane), enemy.y + enemyHeight / 2);
+            this.xpManager.spawnXP(enemyX, enemy.y + enemyActualHeight / 2);
           }
           if (this.powerUps) {
-            this.powerUps.maybeDrop({ lane: enemy.lane, y: enemy.y + enemyHeight / 2 });
+            this.powerUps.maybeDrop({ lane: enemy.lane, y: enemy.y + enemyActualHeight / 2, x: enemyX });
           }
           const nextHitCount = (projectile.hits ?? 0) + 1;
           const pierce = projectile.pierce ?? 0;
@@ -217,10 +239,10 @@ export class GameEngine {
     renderer.endFrame();
   }
 
-  spawnEnemyDestroyedEffect(lane, impactY) {
+  spawnEnemyDestroyedEffect(lane, impactY, lateralOffset = 0) {
     if (!this.particles) return;
     this.particles.emitBurst({
-      x: laneCenter(lane),
+      x: laneCenter(lane, lateralOffset),
       y: Math.max(0, impactY),
       ...GAME_CONFIG.effects.enemyDestroyed,
     });
@@ -229,10 +251,10 @@ export class GameEngine {
     }
   }
 
-  spawnLeakEffect(lane, impactY) {
+  spawnLeakEffect(lane, impactY, lateralOffset = 0) {
     if (!this.particles) return;
     this.particles.emitBurst({
-      x: laneCenter(lane),
+      x: laneCenter(lane, lateralOffset),
       y: Math.min(PLAYFIELD_HEIGHT, Math.max(0, impactY)),
       ...GAME_CONFIG.effects.leak,
     });
@@ -246,25 +268,65 @@ export class GameEngine {
     const turnRate = GAME_CONFIG.projectile.autoAimTurnRate;
     const strength = projectile.aim.strength ?? 1;
     const currentOffset = projectile.offset ?? 0;
-    const targetOffset = this.findNearestEnemyOffset(projectile.lane, projectile.y);
-    const deltaOffset = targetOffset - currentOffset;
-    const maxAdjust = turnRate * strength * seconds;
-    const clampedAdjust = Math.max(Math.min(deltaOffset, maxAdjust), -maxAdjust);
-    projectile.offset = currentOffset + clampedAdjust;
+
+    // Find target considering cross-lane capability
+    const target = projectile.aim.crossLane
+      ? this.findNearestEnemyAnyLane(projectile.lane, projectile.y)
+      : this.findNearestEnemyInLane(projectile.lane, projectile.y);
+
+    if (!target) return;
+
+    // If cross-lane targeting and enemy is in different lane, steer toward it
+    if (projectile.aim.crossLane && target.lane !== projectile.lane) {
+      const laneDiff = target.lane - projectile.lane;
+      const laneWidth = GAME_CONFIG.laneWidth;
+      const targetOffsetForLaneChange = laneDiff * laneWidth / laneWidth + (target.lateralOffset || 0);
+
+      const deltaOffset = targetOffsetForLaneChange - currentOffset;
+      const maxAdjust = turnRate * strength * seconds * 0.5; // Slower cross-lane adjustment
+      projectile.offset = currentOffset + Math.max(Math.min(deltaOffset, maxAdjust), -maxAdjust);
+
+      // Change lane when close enough
+      if (Math.abs(deltaOffset) < 0.3) {
+        projectile.lane = target.lane;
+      }
+    } else {
+      // Normal in-lane tracking
+      const targetOffset = target.lateralOffset || 0;
+      const deltaOffset = targetOffset - currentOffset;
+      const maxAdjust = turnRate * strength * seconds;
+      projectile.offset = currentOffset + Math.max(Math.min(deltaOffset, maxAdjust), -maxAdjust);
+    }
   }
 
-  findNearestEnemyOffset(lane, projectileY) {
-    let closestOffset = 0;
+  findNearestEnemyInLane(lane, projectileY) {
+    let closestEnemy = null;
     let nearestDistance = Infinity;
     for (let i = 0; i < this.state.enemies.length; i += 1) {
       const enemy = this.state.enemies[i];
       if (enemy.lane !== lane) continue;
       const distance = Math.abs(enemy.y - projectileY);
-      if (distance < nearestDistance) {
+      if (distance < nearestDistance && enemy.y < projectileY) {
         nearestDistance = distance;
-        closestOffset = 0;
+        closestEnemy = enemy;
       }
     }
-    return closestOffset;
+    return closestEnemy;
+  }
+
+  findNearestEnemyAnyLane(currentLane, projectileY) {
+    let closestEnemy = null;
+    let nearestDistance = Infinity;
+    for (let i = 0; i < this.state.enemies.length; i += 1) {
+      const enemy = this.state.enemies[i];
+      // Prefer same lane, but consider all lanes
+      const lanePenalty = Math.abs(enemy.lane - currentLane) * 50;
+      const distance = Math.abs(enemy.y - projectileY) + lanePenalty;
+      if (distance < nearestDistance && enemy.y < projectileY) {
+        nearestDistance = distance;
+        closestEnemy = enemy;
+      }
+    }
+    return closestEnemy;
   }
 }

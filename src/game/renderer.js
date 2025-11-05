@@ -93,14 +93,20 @@ export class Renderer {
 
   drawEnemies(enemies) {
     const { ctx, metrics } = this;
-    ctx.fillStyle = '#ff4f6d';
     enemies.forEach((enemy) => {
-      const width = GAME_CONFIG.enemy.width * metrics.scale;
-      const height = GAME_CONFIG.enemy.height * metrics.scale;
+      const enemySize = enemy.size || 1;
+      const width = GAME_CONFIG.enemy.width * enemySize * metrics.scale;
+      const height = GAME_CONFIG.enemy.height * enemySize * metrics.scale;
+      const lateralOffset = enemy.lateralOffset || 0;
       const x =
-        metrics.offsetX + metrics.laneCenter(enemy.lane) * metrics.scale - width / 2;
+        metrics.offsetX + metrics.laneCenter(enemy.lane, lateralOffset) * metrics.scale - width / 2;
       const y = metrics.topY + enemy.y * metrics.scale;
-      roundRect(ctx, x, y, width, height, 8 * metrics.scale);
+
+      // Color varies slightly by size for visual distinction
+      const hue = 345 + (enemySize - 1) * 15; // Range from pink to red-orange
+      ctx.fillStyle = `hsl(${hue}, 100%, 65%)`;
+
+      roundRect(ctx, x, y, width, height, 8 * enemySize * metrics.scale);
       ctx.fill();
     });
   }
