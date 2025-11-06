@@ -1,39 +1,89 @@
 export const UPGRADES = {
   damage: {
     name: 'Attack',
-    desc: (l) => `+3 Damage (${5 + l * 3} -> ${5 + (l + 1) * 3})`,
+    desc: (player, l) => {
+      const prestige = Math.floor(l / 3);
+      const baseIncrease = 3 + prestige * 2;
+      return l % 3 === 2
+        ? `+${baseIncrease} Damage [PRESTIGE READY]`
+        : `+${baseIncrease} Damage`;
+    },
     level: 0,
-    apply: (player) => { player.damage += 3; },
+    prestige: 0,
+    apply: (player) => {
+      const prestige = Math.floor(this.level / 3);
+      player.damage += 3 + prestige * 2;
+    },
   },
   fireRate: {
     name: 'Fire Rate',
-    desc: () => '+25% Fire Rate (Big Boost!)',
+    desc: (player, l) => {
+      const prestige = Math.floor(l / 3);
+      const multiplier = 0.75 - prestige * 0.05;
+      return l % 3 === 2
+        ? `+${Math.round((1 - multiplier) * 100)}% Fire Rate [PRESTIGE READY]`
+        : `+${Math.round((1 - multiplier) * 100)}% Fire Rate`;
+    },
     level: 0,
-    apply: (player) => { player.fireCooldown *= 0.75; },
+    prestige: 0,
+    apply: (player) => {
+      const prestige = Math.floor(this.level / 3);
+      player.fireCooldown *= 0.75 - prestige * 0.05;
+    },
   },
   bulletCount: {
     name: 'Multishot',
-    desc: (player) => `+1 Bullet (${player.bulletCount} -> ${player.bulletCount + 1})`,
+    desc: (player, l) => {
+      return l % 3 === 2
+        ? `+1 Bullet (${player.bulletCount} -> ${player.bulletCount + 1}) [PRESTIGE READY]`
+        : `+1 Bullet (${player.bulletCount} -> ${player.bulletCount + 1})`;
+    },
     level: 0,
+    prestige: 0,
     apply: (player) => { player.bulletCount++; },
   },
   pierce: {
     name: 'Pierce',
-    desc: (player) => `+1 Pierce (${player.pierce} -> ${player.pierce + 1})`,
+    desc: (player, l) => {
+      return l % 3 === 2
+        ? `+1 Pierce (${player.pierce} -> ${player.pierce + 1}) [PRESTIGE READY]`
+        : `+1 Pierce (${player.pierce} -> ${player.pierce + 1})`;
+    },
     level: 0,
+    prestige: 0,
     apply: (player) => { player.pierce++; },
   },
   bulletSpeed: {
     name: 'Bullet Speed',
-    desc: () => '+20% Faster',
+    desc: (player, l) => {
+      const prestige = Math.floor(l / 3);
+      const multiplier = 1.2 + prestige * 0.1;
+      return l % 3 === 2
+        ? `+${Math.round((multiplier - 1) * 100)}% Faster [PRESTIGE READY]`
+        : `+${Math.round((multiplier - 1) * 100)}% Faster`;
+    },
     level: 0,
-    apply: (player) => { player.projectileSpeed *= 1.2; },
+    prestige: 0,
+    apply: (player) => {
+      const prestige = Math.floor(this.level / 3);
+      player.projectileSpeed *= 1.2 + prestige * 0.1;
+    },
   },
   autoAim: {
     name: 'Homing Bullets',
-    desc: () => '+50% Better Tracking',
+    desc: (player, l) => {
+      const prestige = Math.floor(l / 3);
+      const multiplier = 1.5 + prestige * 0.2;
+      return l % 3 === 2
+        ? `+${Math.round((multiplier - 1) * 100)}% Tracking [PRESTIGE READY]`
+        : `+${Math.round((multiplier - 1) * 100)}% Tracking`;
+    },
     level: 0,
-    apply: (player) => { player.autoAimStrength *= 1.5; },
+    prestige: 0,
+    apply: (player) => {
+      const prestige = Math.floor(this.level / 3);
+      player.autoAimStrength *= 1.5 + prestige * 0.2;
+    },
   },
   companion: {
     name: 'Flanking Support',
@@ -91,8 +141,27 @@ export class UpgradeManager {
   applyUpgrade(key) {
     const upgrade = this.upgrades[key];
     if (upgrade) {
-      upgrade.apply(this.state.player);
+      upgrade.apply.call(upgrade, this.state.player);
       upgrade.level++;
+
+      // Check for prestige (every 3 levels)
+      if (upgrade.level > 0 && upgrade.level % 3 === 0) {
+        upgrade.prestige = (upgrade.prestige || 0) + 1;
+        // Spawn special prestige notification
+        if (this.state.spawnTextPopup) {
+          const player = this.state.player;
+          const laneCenter = (lane, offset = 0) =>
+            16 + (lane + 0.5 + offset) * 120;
+          const playerX = laneCenter(player.lane, player.laneProgress ?? 0);
+          this.state.spawnTextPopup(
+            '★ PRESTIGE ★',
+            playerX,
+            player.y - 50,
+            '#ffd700',
+            24
+          );
+        }
+      }
     }
   }
 }

@@ -41,6 +41,7 @@ export class GameState {
     this.enemyProjectiles = [];
     this.xpOrbs = [];
     this.powerUps = [];
+    this.textPopups = [];
     this.lastSpawn = 0;
     this.burstTimer = 0;
     this.burstActiveTime = 0;
@@ -114,5 +115,21 @@ export class GameState {
         break;
       }
     }
+  }
+
+  spawnTextPopup(text, x, y, color = '#ffffff', size = 18) {
+    this.textPopups.push({
+      text,
+      x,
+      y,
+      startY: y,
+      color,
+      size,
+      alpha: 1,
+      life: 0,
+      maxLife: 1200,
+      vx: (Math.random() - 0.5) * 40,
+      vy: -120,
+    });
   }
 }

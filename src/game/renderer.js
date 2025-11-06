@@ -248,6 +248,38 @@ export class Renderer {
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = 'source-over';
   }
+
+  drawTextPopups(textPopups) {
+    if (!textPopups?.length) return;
+    const { ctx, metrics } = this;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    textPopups.forEach((popup) => {
+      const x = metrics.offsetX + popup.x * metrics.scale;
+      const y = metrics.topY + popup.y * metrics.scale;
+      const fontSize = popup.size * metrics.scale;
+
+      ctx.globalAlpha = popup.alpha;
+      ctx.font = `bold ${fontSize}px monospace`;
+
+      // Outline/shadow for readability
+      ctx.shadowColor = '#000000';
+      ctx.shadowBlur = 6 * metrics.scale;
+      ctx.lineWidth = 3 * metrics.scale;
+      ctx.strokeStyle = '#000000';
+      ctx.strokeText(popup.text, x, y);
+
+      // Fill with color
+      ctx.shadowBlur = 12 * metrics.scale;
+      ctx.shadowColor = popup.color;
+      ctx.fillStyle = popup.color;
+      ctx.fillText(popup.text, x, y);
+    });
+
+    ctx.restore();
+  }
 }
 
 function roundRect(ctx, x, y, width, height, radius) {

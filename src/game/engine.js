@@ -115,8 +115,25 @@ export class GameEngine {
     this.updateProjectiles(delta);
     this.updateEnemies(delta);
     this.updateEnemyProjectiles(delta);
+    this.updateTextPopups(delta);
 
     this.state.addScore((GAME_CONFIG.difficulty.scorePerSecond * delta) / 1000);
+  }
+
+  updateTextPopups(delta) {
+    const seconds = delta / 1000;
+    for (let i = this.state.textPopups.length - 1; i >= 0; i -= 1) {
+      const popup = this.state.textPopups[i];
+      popup.life += delta;
+      popup.x += popup.vx * seconds;
+      popup.y += popup.vy * seconds;
+      popup.vy += 200 * seconds; // Gravity
+      popup.alpha = 1 - (popup.life / popup.maxLife);
+
+      if (popup.life >= popup.maxLife) {
+        this.state.textPopups.splice(i, 1);
+      }
+    }
   }
 
   updateCompanions(delta) {
@@ -337,6 +354,9 @@ export class GameEngine {
     renderer.drawPlayer(state.player);
     if (particles) {
       renderer.drawParticles(particles.getParticles());
+    }
+    if (renderer.drawTextPopups) {
+      renderer.drawTextPopups(state.textPopups);
     }
     renderer.endFrame();
   }
