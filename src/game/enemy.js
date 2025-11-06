@@ -48,8 +48,10 @@ export class EnemySpawner {
       GAME_CONFIG.enemy.maxSpeed,
       GAME_CONFIG.enemy.baseSpeed * (1 + this.state.elapsed / 60000),
     );
-    const velocity = randBetween(speed * 0.9, speed * 1.2);
     const sizeVariant = this.selectSizeVariant();
+    const type = this.selectEnemyType();
+    const velocity = randBetween(speed * 0.9, speed * 1.2) * (type.speedMultiplier || 1);
+    const maxHealth = Math.ceil(sizeVariant.scale * type.healthMultiplier);
 
     this.state.enemies.push({
       lane,
@@ -61,6 +63,11 @@ export class EnemySpawner {
       lateralOffset: 0,
       lateralDirection: Math.random() > 0.5 ? 1 : -1,
       lateralPhase: Math.random() * Math.PI * 2,
+      type: type.id,
+      typeData: type,
+      health: maxHealth,
+      maxHealth: maxHealth,
+      shootCooldown: 0,
     });
   }
 
@@ -99,8 +106,10 @@ export class EnemySpawner {
           GAME_CONFIG.enemy.maxSpeed,
           GAME_CONFIG.enemy.baseSpeed * burstSpeedBoost,
         );
-        const velocity = randBetween(speed * 0.95, speed * 1.3);
         const sizeVariant = this.selectSizeVariant();
+        const type = this.selectEnemyType();
+        const velocity = randBetween(speed * 0.95, speed * 1.3) * (type.speedMultiplier || 1);
+        const maxHealth = Math.ceil(sizeVariant.scale * type.healthMultiplier);
 
         this.state.enemies.push({
           lane,
@@ -112,6 +121,11 @@ export class EnemySpawner {
           lateralOffset: 0,
           lateralDirection: Math.random() > 0.5 ? 1 : -1,
           lateralPhase: Math.random() * Math.PI * 2,
+          type: type.id,
+          typeData: type,
+          health: maxHealth,
+          maxHealth: maxHealth,
+          shootCooldown: 0,
         });
       }
     }
@@ -130,6 +144,21 @@ export class EnemySpawner {
     }
 
     return variants[0]; // Fallback
+  }
+
+  selectEnemyType() {
+    const types = GAME_CONFIG.enemy.types;
+    const totalWeight = types.reduce((sum, t) => sum + t.weight, 0);
+    let random = Math.random() * totalWeight;
+
+    for (const type of types) {
+      random -= type.weight;
+      if (random <= 0) {
+        return type;
+      }
+    }
+
+    return types[0]; // Fallback
   }
 }
 

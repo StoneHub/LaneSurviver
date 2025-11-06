@@ -77,15 +77,58 @@ export class Renderer {
 
   drawProjectiles(projectiles) {
     const { ctx, metrics } = this;
-    ctx.fillStyle = '#ffe566';
     projectiles.forEach((projectile) => {
-      const width = GAME_CONFIG.projectile.width * metrics.scale;
-      const height = GAME_CONFIG.projectile.height * metrics.scale;
-      const offset = projectile.offset ?? 0;
-      const x =
-        metrics.offsetX +
-        metrics.laneCenter(projectile.lane, offset) * metrics.scale -
-        width / 2;
+      if (projectile.isCompanion) {
+        // Companion projectiles - cyan color
+        ctx.fillStyle = '#22d3ee';
+        const width = projectile.width * metrics.scale;
+        const height = projectile.height * metrics.scale;
+        const x = metrics.offsetX + projectile.x * metrics.scale - width / 2;
+        const y = metrics.topY + projectile.y * metrics.scale - height / 2;
+        ctx.fillRect(x, y, width, height);
+      } else {
+        // Player projectiles - yellow
+        ctx.fillStyle = '#ffe566';
+        const width = GAME_CONFIG.projectile.width * metrics.scale;
+        const height = GAME_CONFIG.projectile.height * metrics.scale;
+        const offset = projectile.offset ?? 0;
+        const x =
+          metrics.offsetX +
+          metrics.laneCenter(projectile.lane, offset) * metrics.scale -
+          width / 2;
+        const y = metrics.topY + projectile.y * metrics.scale;
+        ctx.fillRect(x, y, width, height);
+      }
+    });
+  }
+
+  drawCompanions(companions) {
+    if (!companions?.length) return;
+    const { ctx, metrics } = this;
+    companions.forEach((companion) => {
+      const size = 12 * metrics.scale;
+      const x = metrics.offsetX + companion.x * metrics.scale - size / 2;
+      const y = metrics.topY + companion.y * metrics.scale - size / 2;
+
+      // Draw companion as a bright cyan square
+      ctx.save();
+      ctx.fillStyle = '#22d3ee';
+      ctx.shadowColor = '#22d3ee';
+      ctx.shadowBlur = 8 * metrics.scale;
+      roundRect(ctx, x, y, size, size, 3 * metrics.scale);
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  drawEnemyProjectiles(enemyProjectiles) {
+    if (!enemyProjectiles?.length) return;
+    const { ctx, metrics } = this;
+    ctx.fillStyle = '#a78bfa';
+    enemyProjectiles.forEach((projectile) => {
+      const width = projectile.width * metrics.scale;
+      const height = projectile.height * metrics.scale;
+      const x = metrics.offsetX + projectile.x * metrics.scale - width / 2;
       const y = metrics.topY + projectile.y * metrics.scale;
       ctx.fillRect(x, y, width, height);
     });
@@ -102,12 +145,29 @@ export class Renderer {
         metrics.offsetX + metrics.laneCenter(enemy.lane, lateralOffset) * metrics.scale - width / 2;
       const y = metrics.topY + enemy.y * metrics.scale;
 
-      // Color varies slightly by size for visual distinction
-      const hue = 345 + (enemySize - 1) * 15; // Range from pink to red-orange
-      ctx.fillStyle = `hsl(${hue}, 100%, 65%)`;
+      // Use type color if available
+      const color = enemy.typeData?.color || '#ff4f6d';
+      ctx.fillStyle = color;
 
       roundRect(ctx, x, y, width, height, 8 * enemySize * metrics.scale);
       ctx.fill();
+
+      // Draw health bar for enemies with more than 1 health
+      if (enemy.maxHealth > 1) {
+        const healthBarWidth = width;
+        const healthBarHeight = 3 * metrics.scale;
+        const healthBarX = x;
+        const healthBarY = y - healthBarHeight - 2 * metrics.scale;
+        const healthPercent = enemy.health / enemy.maxHealth;
+
+        // Background
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+
+        // Health
+        ctx.fillStyle = healthPercent > 0.5 ? '#4ade80' : healthPercent > 0.25 ? '#fbbf24' : '#f87171';
+        ctx.fillRect(healthBarX, healthBarY, healthBarWidth * healthPercent, healthBarHeight);
+      }
     });
   }
 

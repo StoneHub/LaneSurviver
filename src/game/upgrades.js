@@ -35,29 +35,28 @@ export const UPGRADES = {
     level: 0,
     apply: (player) => { player.autoAimStrength *= 1.5; },
   },
-  crossLaneShot: {
-    name: 'Cross-Lane Targeting',
+  companion: {
+    name: 'Flanking Support',
     desc: (player) => {
-      const current = player.crossLaneRange || 0;
-      return current === 0
-        ? 'Shoot into neighbor lanes when under pressure'
-        : `Expand range (${current} -> ${current + 1} lanes)`;
+      const count = player.companionCount || 0;
+      return count === 0
+        ? 'Spawn 2 friendly shooters to flank you'
+        : `Add 2 more companions (${count} -> ${count + 2})`;
     },
     level: 0,
-    max: 2,
+    max: 3,
     apply: (player) => {
-      player.crossLaneRange = (player.crossLaneRange || 0) + 1;
-      player.crossLaneEnabled = true;
+      player.companionCount = (player.companionCount || 0) + 2;
     },
   },
-  advancedTargeting: {
-    name: 'Advanced Targeting',
-    desc: () => 'Auto-aim works across lanes (Requires Cross-Lane)',
+  companionPower: {
+    name: 'Companion Firepower',
+    desc: () => 'Companions shoot 50% faster and deal more damage',
     level: 0,
-    max: 1,
-    canSelect: (player) => player.crossLaneEnabled === true,
+    max: 2,
+    canSelect: (player) => (player.companionCount || 0) > 0,
     apply: (player) => {
-      player.advancedTargeting = true;
+      player.companionPower = (player.companionPower || 1) + 0.5;
     },
   },
 };
