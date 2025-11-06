@@ -28,18 +28,20 @@ export class GameState {
       xp: 0,
       xpToNext: 10,
       autoAimStrength: GAME_CONFIG.player.autoAimStrength ?? 1.2,
-      crossLaneEnabled: false,
-      crossLaneRange: 0,
-      advancedTargeting: false,
+      companionCount: 0,
+      companionPower: 1,
     };
+    this.companions = [];
     this.difficultyLevel = 1;
     this.score = 0;
     this.elapsed = 0;
     this.spawnTimer = 0;
     this.enemies = [];
     this.projectiles = [];
+    this.enemyProjectiles = [];
     this.xpOrbs = [];
     this.powerUps = [];
+    this.textPopups = [];
     this.lastSpawn = 0;
     this.burstTimer = 0;
     this.burstActiveTime = 0;
@@ -113,5 +115,21 @@ export class GameState {
         break;
       }
     }
+  }
+
+  spawnTextPopup(text, x, y, color = '#ffffff', size = 18) {
+    this.textPopups.push({
+      text,
+      x,
+      y,
+      startY: y,
+      color,
+      size,
+      alpha: 1,
+      life: 0,
+      maxLife: 1200,
+      vx: (Math.random() - 0.5) * 40,
+      vy: -120,
+    });
   }
 }

@@ -82,6 +82,48 @@ export const GAME_CONFIG = {
       { scale: 1.6, weight: 0.05, canMove: false, moveSpeed: 0 },  // Extra large, no lateral movement
     ],
     lateralMoveRange: 0.35, // Max lateral movement within lane (fraction of lane width)
+    // Enemy types with unique behaviors
+    types: [
+      {
+        id: 'basic',
+        name: 'Basic',
+        color: '#ff4f6d',
+        weight: 0.5,
+        healthMultiplier: 1,
+        scoreMultiplier: 1,
+        canShoot: false,
+      },
+      {
+        id: 'tank',
+        name: 'Tank',
+        color: '#ff8c42',
+        weight: 0.2,
+        healthMultiplier: 3,
+        scoreMultiplier: 3,
+        canShoot: false,
+      },
+      {
+        id: 'shooter',
+        name: 'Shooter',
+        color: '#8b5cf6',
+        weight: 0.15,
+        healthMultiplier: 1.5,
+        scoreMultiplier: 2,
+        canShoot: true,
+        shootCooldown: 2000,
+        shootChance: 0.3,
+      },
+      {
+        id: 'fast',
+        name: 'Fast',
+        color: '#22d3ee',
+        weight: 0.15,
+        healthMultiplier: 0.7,
+        scoreMultiplier: 1.5,
+        speedMultiplier: 1.4,
+        canShoot: false,
+      },
+    ],
   },
   difficulty: {
     rampInterval: 10000,

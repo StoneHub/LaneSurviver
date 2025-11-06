@@ -129,17 +129,30 @@ export class PowerUpManager {
       this.state.healPlayer(effects.heal);
     }
 
+    // Spawn text popup from player position
+    const playerX = laneCenter(player.lane, player.laneProgress ?? 0);
+    const playerY = player.y;
+    if (this.state.spawnTextPopup) {
+      this.state.spawnTextPopup(
+        `+${def.title}`,
+        playerX,
+        playerY - 30,
+        def.color || '#ffffff',
+        20
+      );
+    }
+
     if (this.particles && def) {
       this.particles.emitBurst({
         x: powerUp.x,
         y: powerUp.y,
-        count: 24,
+        count: 32,
         palette: [def.color ?? '#ffffff', '#ffffff'],
-        speed: [220, 320],
-        life: [220, 360],
-        size: [2, 4],
-        gravity: -120,
-        drag: 0.9,
+        speed: [240, 360],
+        life: [280, 420],
+        size: [2.5, 5],
+        gravity: -160,
+        drag: 0.88,
         blend: 'lighter',
       });
     }
