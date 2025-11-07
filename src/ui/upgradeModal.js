@@ -1,3 +1,5 @@
+// TODO: Add keyboard controls (1, 2, 3 keys) for faster upgrade selection
+// IDEA: Add hover preview showing what stats would look like with the upgrade
 export class UpgradeModal {
   constructor(root, onChoose) {
     this.root = root;
@@ -12,7 +14,7 @@ export class UpgradeModal {
       card.className = 'upgrade-card';
       card.innerHTML = `
         <div class="upgrade-card-title">${option.name}</div>
-        <div class="upgrade-card-desc">${option.desc(this.playerState)}</div>
+        <div class="upgrade-card-desc">${option.desc(this.playerState, option.level)}</div>
         <div class="upgrade-level">Level ${option.level + 1}</div>
       `;
       card.onclick = () => {
