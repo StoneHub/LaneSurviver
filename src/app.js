@@ -13,9 +13,12 @@ import { PowerUpManager } from './game/powerup.js';
 import { XPManager } from './game/xp.js';
 import { UpgradeManager } from './game/upgrades.js';
 import { UpgradeModal } from './ui/upgradeModal.js';
+import { GameOverModal } from './ui/gameOverModal.js';
+import { RunHistory } from './systems/runHistory.js';
+import { RunHistoryPanel } from './ui/runHistoryPanel.js';
 
 export class LaneSurvivorApp {
-  constructor({ canvas, hudRoot, controlsRoot }) {
+  constructor({ canvas, hudRoot, controlsRoot, historyRoot }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
@@ -42,6 +45,17 @@ export class LaneSurvivorApp {
       (key) => this.engine.applyUpgrade(key)
     );
 
+    // Game Over Modal and Run History
+    this.gameOverModal = new GameOverModal(document.getElementById('gameOverModal'));
+    this.gameOverModal.setRestartHandler(() => this.restart());
+    this.runHistory = new RunHistory();
+    this.runHistoryPanel = new RunHistoryPanel(historyRoot);
+    this.runHistoryPanel.setClearHandler(() => {
+      this.runHistory.clear();
+      this.runHistoryPanel.update(this.runHistory);
+    });
+    this.runHistoryPanel.update(this.runHistory);
+
     this.engine = new GameEngine({
       state: this.state,
       player: this.player,
@@ -55,7 +69,8 @@ export class LaneSurvivorApp {
       upgradeModal: this.upgradeModal,
       autoFire: true,
       onFire: () => this.performFire(),
-      onTick: (state) => this.hud.update(state),
+      onTick: (state) => this.onTick(state),
+      onGameOver: (state) => this.onGameOver(state),
     });
 
     this.input = new InputManager(document);
@@ -114,13 +129,29 @@ export class LaneSurvivorApp {
     this.renderer.setMetrics(this.metrics);
   }
 
+  onTick(state) {
+    this.hud.update(state);
+  }
+
+  onGameOver(state) {
+    // Save run to history
+    this.runHistory.saveRun(state);
+    this.runHistoryPanel.update(this.runHistory);
+
+    // Show game over modal
+    this.gameOverModal.show(state);
+  }
+
   restart() {
+    this.gameOverModal.hide();
     this.state.reset();
     this.particles.clear();
     this.forces.reset();
     this.spawner.spawnInterval = GAME_CONFIG.enemy.spawnInterval;
     this.engine.lastTime = performance.now();
+    this.engine.gameOverTriggered = false; // Reset the flag
     this.hud.update(this.state);
+    this.engine.start();
   }
 
   handleFire() {

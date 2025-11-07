@@ -20,6 +20,7 @@ export class GameEngine {
     autoFire = false,
     onFire = null,
     onTick,
+    onGameOver = null,
   }) {
     this.state = state;
     this.player = player;
@@ -34,9 +35,11 @@ export class GameEngine {
     this.autoFire = autoFire;
     this.onFire = onFire;
     this.onTick = onTick;
+    this.onGameOver = onGameOver;
     this.isRunning = false;
     this.lastTime = 0;
     this.requestId = null;
+    this.gameOverTriggered = false;
   }
 
   start() {
@@ -97,6 +100,11 @@ export class GameEngine {
     }
 
     if (this.state.isGameOver) {
+      // Trigger game over callback once
+      if (!this.gameOverTriggered && this.onGameOver) {
+        this.gameOverTriggered = true;
+        this.onGameOver(this.state);
+      }
       return;
     }
 
