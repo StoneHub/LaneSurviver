@@ -19,6 +19,7 @@ export class GameState {
       health: GAME_CONFIG.player.maxHealth,
       cooldown: 0,
       laneProgress: 0,
+      damage: 1, // Base damage for projectiles
       fireCooldown: GAME_CONFIG.player.fireCooldown,
       projectileSpeed: GAME_CONFIG.player.projectileSpeed,
       bulletCount: 1,

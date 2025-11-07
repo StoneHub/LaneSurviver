@@ -299,8 +299,10 @@ export class GameEngine {
         const horizontalOverlap = Math.abs(enemyX - projectileX) < (enemyWidth + projectileWidth) / 2;
 
         if (verticalOverlap && horizontalOverlap) {
+          // TODO: Consider storing damage per projectile for companion shots
           // Damage enemy
-          enemy.health = (enemy.health || 1) - 1;
+          const damage = projectile.damage || this.state.player.damage || 1;
+          enemy.health = (enemy.health || 1) - damage;
 
           // Check if enemy is destroyed
           if (enemy.health <= 0) {

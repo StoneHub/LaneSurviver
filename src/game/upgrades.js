@@ -1,3 +1,6 @@
+// TODO: Add upgrade synergies - certain combinations could provide bonus effects
+// TODO: Implement upgrade respec/reset feature for player flexibility
+// IDEA: Add upgrade rarity tiers (common, rare, legendary) with different visual treatments
 export const UPGRADES = {
   damage: {
     name: 'Attack',
@@ -10,7 +13,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => {
+    apply: function(player) {
       const prestige = Math.floor(this.level / 3);
       player.damage += 3 + prestige * 2;
     },
@@ -26,7 +29,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => {
+    apply: function(player) {
       const prestige = Math.floor(this.level / 3);
       player.fireCooldown *= 0.75 - prestige * 0.05;
     },
@@ -40,7 +43,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => { player.bulletCount++; },
+    apply: function(player) { player.bulletCount++; },
   },
   pierce: {
     name: 'Pierce',
@@ -51,7 +54,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => { player.pierce++; },
+    apply: function(player) { player.pierce++; },
   },
   bulletSpeed: {
     name: 'Bullet Speed',
@@ -64,7 +67,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => {
+    apply: function(player) {
       const prestige = Math.floor(this.level / 3);
       player.projectileSpeed *= 1.2 + prestige * 0.1;
     },
@@ -80,7 +83,7 @@ export const UPGRADES = {
     },
     level: 0,
     prestige: 0,
-    apply: (player) => {
+    apply: function(player) {
       const prestige = Math.floor(this.level / 3);
       player.autoAimStrength *= 1.5 + prestige * 0.2;
     },
@@ -95,7 +98,7 @@ export const UPGRADES = {
     },
     level: 0,
     max: 3,
-    apply: (player) => {
+    apply: function(player) {
       player.companionCount = (player.companionCount || 0) + 2;
     },
   },
@@ -105,7 +108,7 @@ export const UPGRADES = {
     level: 0,
     max: 2,
     canSelect: (player) => (player.companionCount || 0) > 0,
-    apply: (player) => {
+    apply: function(player) {
       player.companionPower = (player.companionPower || 1) + 0.5;
     },
   },
@@ -141,6 +144,7 @@ export class UpgradeManager {
   applyUpgrade(key) {
     const upgrade = this.upgrades[key];
     if (upgrade) {
+      // TODO: Add validation to ensure player properties exist before applying upgrades
       upgrade.apply.call(upgrade, this.state.player);
       upgrade.level++;
 
@@ -152,6 +156,8 @@ export class UpgradeManager {
       // Check for prestige (every 3 levels)
       if (upgrade.level > 0 && upgrade.level % 3 === 0) {
         upgrade.prestige = (upgrade.prestige || 0) + 1;
+        // TODO: Add particle effects or screen shake for prestige moments
+        // IDEA: Play unique sound effect for prestige upgrades
         // Spawn special prestige notification
         if (this.state.spawnTextPopup) {
           const player = this.state.player;
