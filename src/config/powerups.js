@@ -49,4 +49,47 @@ export const POWER_UP_DEFS = [
       heal: 1,
     },
   },
+  // TODO: Add rarity system for these special powerups
+  // IDEA: Make special powerups glow or pulse to indicate they're rare
+  {
+    id: 'lane-nuke',
+    label: '💥',
+    title: 'Lane Clearer',
+    description: 'Press Q to clear all enemies in your current lane!',
+    color: '#fbbf24',
+    rarity: 'rare',
+    effects: {
+      activatable: true,
+      type: 'lane-clear',
+      charges: 1,
+    },
+  },
+  {
+    id: 'trail-blazer',
+    label: '🔥',
+    title: 'Trail Blazer',
+    description: 'Leave a damaging trail when moving between lanes!',
+    color: '#f97316',
+    rarity: 'rare',
+    effects: {
+      activatable: true,
+      type: 'damage-trail',
+      duration: 8000, // 8 seconds
+    },
+  },
+  {
+    id: 'side-blast',
+    label: '⚡',
+    title: 'Side Blast',
+    description: 'Press E to blast adjacent lanes!',
+    color: '#8b5cf6',
+    rarity: 'rare',
+    effects: {
+      activatable: true,
+      type: 'side-blast',
+      charges: 2,
+    },
+  },
 ];
+
+// TODO: Add activation key bindings display in HUD

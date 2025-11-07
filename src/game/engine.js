@@ -17,9 +17,11 @@ export class GameEngine {
     xpManager,
     upgradeManager,
     upgradeModal,
+    abilityManager,
     autoFire = false,
     onFire = null,
     onTick,
+    onGameOver = null,
   }) {
     this.state = state;
     this.player = player;
@@ -31,12 +33,15 @@ export class GameEngine {
     this.xpManager = xpManager;
     this.upgradeManager = upgradeManager;
     this.upgradeModal = upgradeModal;
+    this.abilityManager = abilityManager;
     this.autoFire = autoFire;
     this.onFire = onFire;
     this.onTick = onTick;
+    this.onGameOver = onGameOver;
     this.isRunning = false;
     this.lastTime = 0;
     this.requestId = null;
+    this.gameOverTriggered = false;
   }
 
   start() {
@@ -90,6 +95,9 @@ export class GameEngine {
     if (this.powerUps) {
       this.powerUps.update(delta);
     }
+    if (this.abilityManager) {
+      this.abilityManager.update(delta);
+    }
     if (this.xpManager) {
       if (this.xpManager.update(delta)) {
         this.showUpgradeModal();
@@ -97,6 +105,11 @@ export class GameEngine {
     }
 
     if (this.state.isGameOver) {
+      // Trigger game over callback once
+      if (!this.gameOverTriggered && this.onGameOver) {
+        this.gameOverTriggered = true;
+        this.onGameOver(this.state);
+      }
       return;
     }
 

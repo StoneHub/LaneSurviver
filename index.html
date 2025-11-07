@@ -6,6 +6,8 @@
     <title>Lane Survivor</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/modal.css" />
+    <link rel="stylesheet" href="styles/gameOver.css" />
+    <link rel="stylesheet" href="styles/runHistory.css" />
   </head>
   <body>
     <div id="app">
@@ -30,9 +32,8 @@
               <span class="value" data-timer>00:00</span>
             </div>
             <div class="hud-card">
-              <span class="label">Status</span>
-              <span class="status" data-status></span>
-              <span class="restart-tip">Press ␣ to fire • R to restart</span>
+              <span class="label">Level</span>
+              <span class="value" data-level>1</span>
             </div>
           </div>
           <div class="touch-controls" data-touch-controls>
@@ -43,6 +44,9 @@
           </div>
         </section>
         <aside class="info-panel">
+          <article class="info-card history-panel" data-history>
+            <!-- Run history will be inserted here -->
+          </article>
           <article class="info-card">
             <h2>How to Play</h2>
             <ul>
@@ -79,6 +83,10 @@
         <div class="upgrade-subtitle">Choose your upgrade</div>
         <div class="upgrade-options"></div>
       </div>
+    </div>
+
+    <div id="gameOverModal">
+      <!-- Game over content will be inserted here -->
     </div>
   </body>
 </html>
