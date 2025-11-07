@@ -2,6 +2,8 @@ const MOVE_LEFT_KEYS = new Set(['ArrowLeft', 'a', 'A']);
 const MOVE_RIGHT_KEYS = new Set(['ArrowRight', 'd', 'D']);
 const FIRE_KEYS = new Set([' ', 'Spacebar', 'Space', 'Enter']);
 const RESTART_KEYS = new Set(['r', 'R']);
+const ABILITY_1_KEYS = new Set(['q', 'Q']); // Lane clear
+const ABILITY_2_KEYS = new Set(['e', 'E']); // Side blast
 
 export class InputManager {
   constructor(target = document) {
@@ -10,6 +12,8 @@ export class InputManager {
       move: () => {},
       fire: () => {},
       restart: () => {},
+      ability1: () => {},
+      ability2: () => {},
     };
     this.keydown = this.onKeyDown.bind(this);
     this.pointerDown = this.onPointerDown.bind(this);
@@ -54,6 +58,12 @@ export class InputManager {
     } else if (RESTART_KEYS.has(event.key)) {
       event.preventDefault();
       this.handlers.restart();
+    } else if (ABILITY_1_KEYS.has(event.key)) {
+      event.preventDefault();
+      this.handlers.ability1();
+    } else if (ABILITY_2_KEYS.has(event.key)) {
+      event.preventDefault();
+      this.handlers.ability2();
     }
   }
 

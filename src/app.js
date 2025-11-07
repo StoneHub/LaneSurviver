@@ -16,6 +16,7 @@ import { UpgradeModal } from './ui/upgradeModal.js';
 import { GameOverModal } from './ui/gameOverModal.js';
 import { RunHistory } from './systems/runHistory.js';
 import { RunHistoryPanel } from './ui/runHistoryPanel.js';
+import { AbilityManager } from './systems/abilities.js';
 
 export class LaneSurvivorApp {
   constructor({ canvas, hudRoot, controlsRoot, historyRoot }) {
@@ -33,9 +34,11 @@ export class LaneSurvivorApp {
     this.responsive = new ResponsiveLayout(document.documentElement);
     this.particles = new ParticleSystem();
     this.forces = new ForceField();
+    this.abilityManager = new AbilityManager(this.state, this.particles);
     this.powerUps = new PowerUpManager({
       state: this.state,
       particles: this.particles,
+      abilityManager: this.abilityManager,
     });
     this.xpManager = new XPManager(this.state);
 
@@ -67,6 +70,7 @@ export class LaneSurvivorApp {
       xpManager: this.xpManager,
       upgradeManager: this.upgradeManager,
       upgradeModal: this.upgradeModal,
+      abilityManager: this.abilityManager,
       autoFire: true,
       onFire: () => this.performFire(),
       onTick: (state) => this.onTick(state),
@@ -78,6 +82,8 @@ export class LaneSurvivorApp {
       move: (direction) => this.player.move(direction),
       fire: () => this.handleFire(),
       restart: () => this.restart(),
+      ability1: () => this.abilityManager.activate('lane-clear'),
+      ability2: () => this.abilityManager.activate('side-blast'),
     });
     this.input.attach();
     this.input.bindTouchControls(controlsRoot);

@@ -17,6 +17,7 @@ export class GameEngine {
     xpManager,
     upgradeManager,
     upgradeModal,
+    abilityManager,
     autoFire = false,
     onFire = null,
     onTick,
@@ -32,6 +33,7 @@ export class GameEngine {
     this.xpManager = xpManager;
     this.upgradeManager = upgradeManager;
     this.upgradeModal = upgradeModal;
+    this.abilityManager = abilityManager;
     this.autoFire = autoFire;
     this.onFire = onFire;
     this.onTick = onTick;
@@ -92,6 +94,9 @@ export class GameEngine {
     }
     if (this.powerUps) {
       this.powerUps.update(delta);
+    }
+    if (this.abilityManager) {
+      this.abilityManager.update(delta);
     }
     if (this.xpManager) {
       if (this.xpManager.update(delta)) {

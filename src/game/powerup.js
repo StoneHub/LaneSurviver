@@ -20,9 +20,10 @@ const laneCenter = (lane, offset = 0) =>
   GAME_CONFIG.canvasPadding + (lane + 0.5 + offset) * GAME_CONFIG.laneWidth;
 
 export class PowerUpManager {
-  constructor({ state, particles }) {
+  constructor({ state, particles, abilityManager }) {
     this.state = state;
     this.particles = particles;
+    this.abilityManager = abilityManager;
   }
 
   resolveConfig() {
@@ -127,6 +128,14 @@ export class PowerUpManager {
 
     if (effects.heal) {
       this.state.healPlayer(effects.heal);
+    }
+
+    // Handle activatable powerups
+    if (effects.activatable && this.abilityManager) {
+      this.abilityManager.addAbility(effects.type, {
+        charges: effects.charges,
+        duration: effects.duration,
+      });
     }
 
     // Spawn text popup from player position
