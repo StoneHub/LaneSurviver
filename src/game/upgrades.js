@@ -144,6 +144,11 @@ export class UpgradeManager {
       upgrade.apply.call(upgrade, this.state.player);
       upgrade.level++;
 
+      // Track upgrade in player state for visual representation
+      if (this.state.player.upgrades) {
+        this.state.player.upgrades[key] = upgrade.level;
+      }
+
       // Check for prestige (every 3 levels)
       if (upgrade.level > 0 && upgrade.level % 3 === 0) {
         upgrade.prestige = (upgrade.prestige || 0) + 1;
