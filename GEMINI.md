@@ -1,5 +1,11 @@
 # GEMINI.md
 
+> **DEPRECATED — Gemini CI Automation Removed (2025-11-07)**
+>
+> The GitHub Actions workflows that previously invoked the Gemini CLI for automated issue triage, pull request reviews, and other CI tasks have been removed for privacy and security reasons. The repository no longer calls external generative AI APIs from CI pipelines. This change prevents credential failures, potential prompt/log leakage, and reduces CI complexity.
+>
+> If you need to re-enable similar functionality in the future, ensure it is properly gated behind organization secrets and reviewed for data exposure.
+
 ## Project Overview
 
 This project is a 2D survival shooter game called "Lane Survivor," built with vanilla JavaScript (ES modules) and designed for static hosting. It's a "zero-build" application, meaning it can be run directly from the source files without a build process. The game is performance-tuned for low-power hardware like the Raspberry Pi 2B.
