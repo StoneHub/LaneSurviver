@@ -30,6 +30,17 @@ export class GameState {
       autoAimStrength: GAME_CONFIG.player.autoAimStrength ?? 1.2,
       companionCount: 0,
       companionPower: 1,
+      // Track acquired upgrades for visual representation
+      upgrades: {
+        damage: 0,
+        fireRate: 0,
+        bulletCount: 0,
+        pierce: 0,
+        bulletSpeed: 0,
+        autoAim: 0,
+        companion: 0,
+        companionPower: 0,
+      },
     };
     this.companions = [];
     this.difficultyLevel = 1;

@@ -65,6 +65,10 @@ export class Renderer {
       width / 2;
     const y = metrics.topY + player.y * metrics.scale;
 
+    // Draw upgrade visual effects BEFORE the player body
+    this.drawUpgradeEffectsBackground(player, x, y, width, height);
+
+    // Draw base player
     const gradient = ctx.createLinearGradient(x, y, x, y + height);
     gradient.addColorStop(0, '#58e2ff');
     gradient.addColorStop(1, '#157bff');
@@ -72,7 +76,203 @@ export class Renderer {
     roundRect(ctx, x, y, width, height, 6 * metrics.scale);
     ctx.fill();
 
+    // Draw upgrade visual effects ON TOP of the player body
+    this.drawUpgradeEffectsForeground(player, x, y, width, height);
+
     ctx.globalAlpha = 1;
+  }
+
+  drawUpgradeEffectsBackground(player, x, y, width, height) {
+    if (!player.upgrades) return;
+    const { ctx, metrics } = this;
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
+
+    // Bullet Speed - Thruster flames at the bottom
+    if (player.upgrades.bulletSpeed > 0) {
+      const prestige = Math.floor(player.upgrades.bulletSpeed / 3);
+      const flameIntensity = 1 + prestige * 0.3;
+      const flameHeight = 15 * metrics.scale * flameIntensity;
+
+      ctx.save();
+      ctx.globalAlpha = 0.7 + prestige * 0.1;
+
+      // Animated flame effect
+      const flicker = Math.sin(Date.now() / 50) * 0.2 + 0.8;
+
+      // Left thruster
+      const gradient1 = ctx.createLinearGradient(
+        centerX - width * 0.3,
+        y + height,
+        centerX - width * 0.3,
+        y + height + flameHeight
+      );
+      gradient1.addColorStop(0, '#ff9500');
+      gradient1.addColorStop(1, 'rgba(255,149,0,0)');
+      ctx.fillStyle = gradient1;
+      ctx.fillRect(
+        centerX - width * 0.35,
+        y + height,
+        width * 0.2,
+        flameHeight * flicker
+      );
+
+      // Right thruster
+      const gradient2 = ctx.createLinearGradient(
+        centerX + width * 0.3,
+        y + height,
+        centerX + width * 0.3,
+        y + height + flameHeight
+      );
+      gradient2.addColorStop(0, '#ff9500');
+      gradient2.addColorStop(1, 'rgba(255,149,0,0)');
+      ctx.fillStyle = gradient2;
+      ctx.fillRect(
+        centerX + width * 0.15,
+        y + height,
+        width * 0.2,
+        flameHeight * flicker
+      );
+
+      ctx.restore();
+    }
+
+    // Damage - Red glowing aura/spikes
+    if (player.upgrades.damage > 0) {
+      const prestige = Math.floor(player.upgrades.damage / 3);
+      const glowSize = 4 * metrics.scale * (1 + prestige * 0.4);
+
+      ctx.save();
+      ctx.shadowColor = '#ff3333';
+      ctx.shadowBlur = glowSize * 3;
+      ctx.strokeStyle = `rgba(255, 51, 51, ${0.5 + prestige * 0.1})`;
+      ctx.lineWidth = glowSize;
+      roundRect(ctx, x, y, width, height, 6 * metrics.scale);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  drawUpgradeEffectsForeground(player, x, y, width, height) {
+    if (!player.upgrades) return;
+    const { ctx, metrics } = this;
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
+
+    // Pierce - Arrow/drill tip at the top
+    if (player.upgrades.pierce > 0) {
+      const prestige = Math.floor(player.upgrades.pierce / 3);
+      const tipLength = 12 * metrics.scale * (1 + prestige * 0.3);
+
+      ctx.save();
+      ctx.fillStyle = `rgba(200, 200, 255, ${0.8 + prestige * 0.2})`;
+      ctx.beginPath();
+      ctx.moveTo(centerX, y - tipLength);
+      ctx.lineTo(centerX - width * 0.25, y);
+      ctx.lineTo(centerX + width * 0.25, y);
+      ctx.closePath();
+      ctx.fill();
+
+      // Add glow for prestige
+      if (prestige > 0) {
+        ctx.shadowColor = '#c8c8ff';
+        ctx.shadowBlur = 8 * metrics.scale;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Multishot - Gun barrels on the sides
+    if (player.upgrades.bulletCount > 0) {
+      const barrelCount = Math.min(player.upgrades.bulletCount, 4);
+      const barrelSize = 6 * metrics.scale;
+      const barrelSpacing = height / (barrelCount + 1);
+
+      ctx.save();
+      ctx.fillStyle = '#444466';
+
+      for (let i = 0; i < barrelCount; i++) {
+        const barrelY = y + barrelSpacing * (i + 1);
+
+        // Left barrel
+        ctx.fillRect(x - barrelSize, barrelY - barrelSize / 2, barrelSize, barrelSize);
+
+        // Right barrel
+        ctx.fillRect(x + width, barrelY - barrelSize / 2, barrelSize, barrelSize);
+      }
+      ctx.restore();
+    }
+
+    // Fire Rate - Electric sparks
+    if (player.upgrades.fireRate > 0) {
+      const prestige = Math.floor(player.upgrades.fireRate / 3);
+      const sparkCount = 2 + prestige;
+
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 255, 100, ${0.6 + prestige * 0.1})`;
+      ctx.lineWidth = 2 * metrics.scale;
+
+      // Animated sparks
+      const time = Date.now() / 100;
+      for (let i = 0; i < sparkCount; i++) {
+        const angle = (time + i * (Math.PI * 2 / sparkCount)) % (Math.PI * 2);
+        const sparkLength = 8 * metrics.scale;
+        const startX = centerX + Math.cos(angle) * (width / 2);
+        const startY = centerY + Math.sin(angle) * (height / 2);
+        const endX = startX + Math.cos(angle) * sparkLength;
+        const endY = startY + Math.sin(angle) * sparkLength;
+
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Homing - Targeting antenna/radar on top
+    if (player.upgrades.autoAim > 0) {
+      const prestige = Math.floor(player.upgrades.autoAim / 3);
+      const antennaHeight = 15 * metrics.scale * (1 + prestige * 0.2);
+
+      ctx.save();
+      ctx.strokeStyle = `rgba(100, 255, 100, ${0.7 + prestige * 0.15})`;
+      ctx.lineWidth = 2 * metrics.scale;
+
+      // Antenna mast
+      ctx.beginPath();
+      ctx.moveTo(centerX, y);
+      ctx.lineTo(centerX, y - antennaHeight);
+      ctx.stroke();
+
+      // Radar dish (rotating)
+      const rotation = (Date.now() / 500) % (Math.PI * 2);
+      const dishRadius = 6 * metrics.scale;
+
+      ctx.save();
+      ctx.translate(centerX, y - antennaHeight);
+      ctx.rotate(rotation);
+      ctx.strokeStyle = `rgba(100, 255, 100, ${0.8 + prestige * 0.2})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, dishRadius, dishRadius * 0.3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Scanning line
+      ctx.strokeStyle = `rgba(100, 255, 100, ${0.5})`;
+      ctx.lineWidth = 1 * metrics.scale;
+      ctx.beginPath();
+      ctx.moveTo(centerX, y - antennaHeight);
+      const scanX = centerX + Math.cos(rotation) * 30 * metrics.scale;
+      const scanY = y - antennaHeight + Math.sin(rotation) * 30 * metrics.scale;
+      ctx.lineTo(scanX, scanY);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Companion Power - Enhanced companion appearance (handled in drawCompanions)
+    // This upgrade affects companion rendering rather than player rendering
   }
 
   drawProjectiles(projectiles) {
@@ -102,21 +302,39 @@ export class Renderer {
     });
   }
 
-  drawCompanions(companions) {
+  drawCompanions(companions, player) {
     if (!companions?.length) return;
     const { ctx, metrics } = this;
+    const companionPowerLevel = player?.upgrades?.companionPower || 0;
+    const prestige = Math.floor(companionPowerLevel / 3);
+
     companions.forEach((companion) => {
-      const size = 12 * metrics.scale;
+      const baseSize = 12 * metrics.scale;
+      // Scale up with companion power upgrades
+      const size = baseSize * (1 + companionPowerLevel * 0.15);
       const x = metrics.offsetX + companion.x * metrics.scale - size / 2;
       const y = metrics.topY + companion.y * metrics.scale - size / 2;
 
       // Draw companion as a bright cyan square
       ctx.save();
-      ctx.fillStyle = '#22d3ee';
-      ctx.shadowColor = '#22d3ee';
-      ctx.shadowBlur = 8 * metrics.scale;
+
+      // Enhanced glow and color with power upgrades
+      const glowIntensity = 8 * metrics.scale * (1 + companionPowerLevel * 0.5);
+      ctx.fillStyle = companionPowerLevel > 0 ? '#00ffff' : '#22d3ee';
+      ctx.shadowColor = companionPowerLevel > 0 ? '#00ffff' : '#22d3ee';
+      ctx.shadowBlur = glowIntensity;
+
       roundRect(ctx, x, y, size, size, 3 * metrics.scale);
       ctx.fill();
+
+      // Add energy border for powered-up companions
+      if (companionPowerLevel > 0) {
+        ctx.strokeStyle = `rgba(255, 255, 100, ${0.4 + prestige * 0.2})`;
+        ctx.lineWidth = 2 * metrics.scale;
+        roundRect(ctx, x, y, size, size, 3 * metrics.scale);
+        ctx.stroke();
+      }
+
       ctx.restore();
     });
   }

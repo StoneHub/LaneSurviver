@@ -349,7 +349,7 @@ export class GameEngine {
       renderer.drawEnemyProjectiles(state.enemyProjectiles);
     }
     if (renderer.drawCompanions) {
-      renderer.drawCompanions(state.companions);
+      renderer.drawCompanions(state.companions, state.player);
     }
     renderer.drawPlayer(state.player);
     if (particles) {
