@@ -13,7 +13,9 @@
     <div id="app">
       <header class="app-header">
         <h1>Lane Survivor</h1>
-        <p class="subtitle">Ultra-light lane dodger tuned for Raspberry Pi static hosting</p>
+        <div class="header-controls">
+          <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
+        </div>
       </header>
       <main class="game-layout">
         <section class="game-panel">
@@ -34,6 +36,22 @@
             <div class="hud-card">
               <span class="label">Level</span>
               <span class="value" data-level>1</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">DPS</span>
+              <span class="value" data-dps>0</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Difficulty</span>
+              <span class="value" data-difficulty>1.0x</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Kills</span>
+              <span class="value" data-kills>0</span>
+            </div>
+            <div class="hud-card">
+              <span class="label">Passed</span>
+              <span class="value" data-passed>0</span>
             </div>
           </div>
           <div class="touch-controls" data-touch-controls>
@@ -82,6 +100,30 @@
         <div class="upgrade-title">LEVEL UP!</div>
         <div class="upgrade-subtitle">Choose your upgrade</div>
         <div class="upgrade-options"></div>
+      </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+      <div class="settings-panel">
+        <div class="settings-title">⚙️ Settings</div>
+        
+        <div class="setting-item">
+          <label class="setting-label">Auto-Collect XP</label>
+          <div class="setting-description">Automatically collect XP orbs from anywhere on screen</div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoCollectToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <label class="setting-label">Enemy Pass-Through Limit</label>
+          <div class="setting-description">How many enemies can pass through before game over (0 = instant death)</div>
+          <input type="number" id="passThroughLimit" class="number-input" min="0" max="500" value="100">
+          <span class="setting-value"> enemies allowed</span>
+        </div>
+
+        <button class="close-settings-btn" id="closeSettingsBtn">Close</button>
       </div>
     </div>
 

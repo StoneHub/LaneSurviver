@@ -130,6 +130,16 @@ export class GameEngine {
     this.updateEnemyProjectiles(delta);
     this.updateTextPopups(delta);
 
+    this.updateTextPopups(delta);
+
+    // Calculate DPS (damage over last 1 second)
+    const now = this.state.elapsed;
+    const oneSecondAgo = now - 1000;
+    // Filter out old entries
+    this.state.damageDealt = this.state.damageDealt.filter(d => d.time > oneSecondAgo);
+    // Sum damage
+    this.state.dps = this.state.damageDealt.reduce((sum, d) => sum + d.amount, 0);
+
     this.state.addScore((GAME_CONFIG.difficulty.scorePerSecond * delta) / 1000);
   }
 
@@ -267,7 +277,7 @@ export class GameEngine {
       const enemyActualHeight = GAME_CONFIG.enemy.height * enemySize;
 
       if (Math.abs(enemy.y - this.state.player.y) < (GAME_CONFIG.player.height + enemyActualHeight) / 2 &&
-          Math.abs(enemyX - playerX) < (GAME_CONFIG.player.width + enemyWidth) / 2) {
+        Math.abs(enemyX - playerX) < (GAME_CONFIG.player.width + enemyWidth) / 2) {
         this.state.damagePlayer(GAME_CONFIG.damage.onHit, {
           cause: 'collision',
           lane: enemy.lane,
@@ -289,6 +299,7 @@ export class GameEngine {
             burstActive: this.state.burstActiveTime > 0,
           },
         });
+        this.state.enemiesPassed++; // Track passed enemies
         continue;
       }
 
@@ -320,6 +331,7 @@ export class GameEngine {
           // Check if enemy is destroyed
           if (enemy.health <= 0) {
             this.state.enemies.splice(i, 1);
+            this.state.kills++; // Track kill
             const scoreBonus = (enemy.typeData?.scoreMultiplier || 1) * GAME_CONFIG.difficulty.scorePerEnemy;
             this.state.addScore(scoreBonus);
             this.spawnEnemyDestroyedEffect(enemy.lane, enemy.y + enemyActualHeight / 2, enemy.lateralOffset || 0);
@@ -333,6 +345,18 @@ export class GameEngine {
             // Hit but not destroyed - show hit effect
             this.spawnHitEffect(enemyX, enemy.y + enemyActualHeight / 2);
           }
+
+          // Show damage number
+          this.state.spawnTextPopup(
+            Math.floor(damage).toString(),
+            enemyX,
+            enemy.y,
+            '#ffffff',
+            16 + Math.min(10, damage * 2)
+          );
+
+          // Track damage for DPS
+          this.state.damageDealt.push({ time: this.state.elapsed, amount: damage });
 
           const nextHitCount = (projectile.hits ?? 0) + 1;
           const pierce = projectile.pierce ?? 0;

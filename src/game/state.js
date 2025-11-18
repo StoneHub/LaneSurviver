@@ -61,7 +61,20 @@ export class GameState {
     this.damageLog = [];
     this.lastDamage = null;
     this.deathInfo = null;
+    this.deathInfo = null;
     this.isGameOver = false;
+
+    // New stats
+    this.kills = 0;
+    this.enemiesPassed = 0;
+    this.dps = 0;
+    this.damageDealt = []; // For DPS calculation
+
+    // Settings (persist across resets if needed, but for now reset here or handle in App)
+    this.settings = this.settings || {
+      autoCollectXP: false,
+      passThroughLimit: 100,
+    };
   }
 
   addScore(amount) {

@@ -13,6 +13,7 @@ import { PowerUpManager } from './game/powerup.js';
 import { XPManager } from './game/xp.js';
 import { UpgradeManager } from './game/upgrades.js';
 import { UpgradeModal } from './ui/upgradeModal.js';
+import { SettingsModal } from './ui/settingsModal.js';
 import { GameOverModal } from './ui/gameOverModal.js';
 import { RunHistory } from './systems/runHistory.js';
 import { RunHistoryPanel } from './ui/runHistoryPanel.js';
@@ -47,6 +48,14 @@ export class LaneSurvivorApp {
       document.getElementById('upgradeModal'),
       (key) => this.engine.applyUpgrade(key)
     );
+
+    this.settingsModal = new SettingsModal(
+      document.getElementById('settingsModal'),
+      this.state
+    );
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      this.settingsModal.show();
+    });
 
     // Game Over Modal and Run History
     this.gameOverModal = new GameOverModal(document.getElementById('gameOverModal'));

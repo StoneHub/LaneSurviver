@@ -1,5 +1,3 @@
-import { GAME_CONFIG } from '../config.js';
-
 export class HUDController {
   constructor(root) {
     this.root = root;
@@ -7,6 +5,10 @@ export class HUDController {
     this.healthEl = root.querySelector('[data-health]');
     this.timerEl = root.querySelector('[data-timer]');
     this.levelEl = root.querySelector('[data-level]');
+    this.dpsEl = root.querySelector('[data-dps]');
+    this.difficultyEl = root.querySelector('[data-difficulty]');
+    this.killsEl = root.querySelector('[data-kills]');
+    this.passedEl = root.querySelector('[data-passed]');
   }
 
   update(state) {
@@ -30,6 +32,18 @@ export class HUDController {
     }
     if (this.levelEl) {
       this.levelEl.textContent = state.player?.level || 1;
+    }
+    if (this.dpsEl) {
+      this.dpsEl.textContent = Math.floor(state.dps || 0).toLocaleString();
+    }
+    if (this.difficultyEl) {
+      this.difficultyEl.textContent = `${(state.difficultyLevel || 1).toFixed(1)}x`;
+    }
+    if (this.killsEl) {
+      this.killsEl.textContent = (state.kills || 0).toLocaleString();
+    }
+    if (this.passedEl) {
+      this.passedEl.textContent = `${state.enemiesPassed || 0}/${state.settings?.passThroughLimit || 100}`;
     }
   }
 }
