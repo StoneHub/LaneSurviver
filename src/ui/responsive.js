@@ -12,6 +12,10 @@ export class ResponsiveLayout {
     if (!this.root) return;
     const mode = window.innerWidth <= UI_CONFIG.mobileBreakpoint ? 'mobile' : 'desktop';
     this.root.dataset.layout = mode;
+
+    // Simple touch detection
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    this.root.dataset.touch = isTouch ? 'true' : 'false';
   }
 
   destroy() {

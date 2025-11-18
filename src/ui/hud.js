@@ -1,3 +1,5 @@
+import { GAME_CONFIG } from '../config.js';
+
 export class HUDController {
   constructor(root) {
     this.root = root;

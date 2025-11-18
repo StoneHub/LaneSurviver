@@ -69,6 +69,27 @@ export const GAME_CONFIG = {
       blend: 'lighter',
       fadePower: 2,
     },
+    levelUp: {
+      count: 60,
+      palette: ['#a78bfa', '#c4b5fd', '#ffffff', '#fbbf24'], // Purple/Gold mix
+      speed: [200, 500],
+      life: [600, 1200],
+      size: [3, 8],
+      gravity: 100,
+      drag: 0.92,
+      blend: 'lighter',
+      spread: Math.PI * 2,
+    },
+    upgradeSelect: {
+      count: 30,
+      palette: ['#ffffff', '#fbbf24'],
+      speed: [100, 300],
+      life: [400, 800],
+      size: [2, 5],
+      gravity: -100, // Float up
+      drag: 0.9,
+      blend: 'lighter',
+    },
   },
   combo: {
     window: 2000, // ms to keep combo alive

@@ -106,7 +106,8 @@ export class LaneSurvivorApp {
   computeMetrics() {
     const container = this.canvas.parentElement;
     const width = container.clientWidth || window.innerWidth;
-    const height = container.clientHeight || window.innerHeight * 0.6;
+    // Use full available height from the container (which is now flexed)
+    const height = container.clientHeight || window.innerHeight;
     const dpr = window.devicePixelRatio || 1;
 
     this.canvas.width = Math.floor(width * dpr);
