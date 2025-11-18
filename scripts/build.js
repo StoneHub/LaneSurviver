@@ -2,14 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const DIST_DIR = path.join(__dirname, '../dist');
-const SUBDIR = 'LaneSurviver';
-const TARGET_DIR = path.join(DIST_DIR, SUBDIR);
 
 // Ensure clean dist directory
 if (fs.existsSync(DIST_DIR)) {
     fs.rmSync(DIST_DIR, { recursive: true, force: true });
 }
-fs.mkdirSync(TARGET_DIR, { recursive: true });
+fs.mkdirSync(DIST_DIR, { recursive: true });
 
 // Files and directories to copy
 const itemsToCopy = [
@@ -21,7 +19,7 @@ const itemsToCopy = [
 
 itemsToCopy.forEach(item => {
     const srcPath = path.join(__dirname, '..', item);
-    const destPath = path.join(TARGET_DIR, item);
+    const destPath = path.join(DIST_DIR, item);
 
     if (fs.existsSync(srcPath)) {
         console.log(`Copying ${item}...`);
@@ -31,4 +29,4 @@ itemsToCopy.forEach(item => {
     }
 });
 
-console.log(`Build complete! Files are ready in dist/${SUBDIR}`);
+console.log(`Build complete! Files are ready in dist/`);
