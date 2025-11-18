@@ -70,6 +70,14 @@ export class GameState {
     this.dps = 0;
     this.damageDealt = []; // For DPS calculation
 
+    // Combo System
+    this.combo = {
+      count: 0,
+      timer: 0,
+      maxCombo: 0,
+      isBoostActive: false,
+    };
+
     // Settings (persist across resets if needed, but for now reset here or handle in App)
     this.settings = this.settings || {
       autoCollectXP: false,

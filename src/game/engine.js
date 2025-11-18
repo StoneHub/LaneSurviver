@@ -141,6 +141,28 @@ export class GameEngine {
     this.state.dps = this.state.damageDealt.reduce((sum, d) => sum + d.amount, 0);
 
     this.state.addScore((GAME_CONFIG.difficulty.scorePerSecond * delta) / 1000);
+
+    // Combo Logic
+    if (this.state.combo.count > 0) {
+      this.state.combo.timer -= delta;
+      if (this.state.combo.timer <= 0) {
+        this.state.combo.count = 0;
+        this.state.combo.isBoostActive = false;
+      }
+    }
+
+    // Player Trail
+    if (this.particles && (this.player.targetLane !== this.player.lane || this.state.combo.isBoostActive)) {
+      // Emit trail more frequently if moving or boosted
+      if (Math.random() < 0.3) {
+        const playerX = laneCenter(this.player.lane, this.player.laneProgress);
+        this.particles.emitBurst({
+          x: playerX,
+          y: this.player.y + 20,
+          ...GAME_CONFIG.effects.playerTrail,
+        });
+      }
+    }
   }
 
   updateTextPopups(delta) {
@@ -283,6 +305,7 @@ export class GameEngine {
           lane: enemy.lane,
           elapsed: this.state.elapsed,
         });
+        this.spawnShieldBreakEffect(playerX, playerY);
         this.state.enemies.splice(i, 1);
         continue;
       }
@@ -299,6 +322,7 @@ export class GameEngine {
             burstActive: this.state.burstActiveTime > 0,
           },
         });
+        this.spawnShieldBreakEffect(laneCenter(enemy.lane), PLAYFIELD_HEIGHT);
         this.state.enemiesPassed++; // Track passed enemies
         continue;
       }
@@ -325,13 +349,34 @@ export class GameEngine {
         if (verticalOverlap && horizontalOverlap) {
           // TODO: Consider storing damage per projectile for companion shots
           // Damage enemy
-          const damage = projectile.damage || this.state.player.damage || 1;
+          let damage = projectile.damage || this.state.player.damage || 1;
+
+          // Crit Logic
+          const isCrit = Math.random() < 0.1; // 10% base crit chance
+          if (isCrit) {
+            damage *= 2;
+            this.particles.emitBurst({
+              x: enemyX,
+              y: enemy.y + enemyActualHeight / 2,
+              ...GAME_CONFIG.effects.criticalHit
+            });
+          }
+
           enemy.health = (enemy.health || 1) - damage;
 
           // Check if enemy is destroyed
           if (enemy.health <= 0) {
             this.state.enemies.splice(i, 1);
             this.state.kills++; // Track kill
+
+            // Combo Logic
+            this.state.combo.count++;
+            this.state.combo.timer = GAME_CONFIG.combo.window;
+            this.state.combo.maxCombo = Math.max(this.state.combo.maxCombo, this.state.combo.count);
+            if (this.state.combo.count >= GAME_CONFIG.combo.threshold) {
+              this.state.combo.isBoostActive = true;
+            }
+
             const scoreBonus = (enemy.typeData?.scoreMultiplier || 1) * GAME_CONFIG.difficulty.scorePerEnemy;
             this.state.addScore(scoreBonus);
             this.spawnEnemyDestroyedEffect(enemy.lane, enemy.y + enemyActualHeight / 2, enemy.lateralOffset || 0);
@@ -348,11 +393,11 @@ export class GameEngine {
 
           // Show damage number
           this.state.spawnTextPopup(
-            Math.floor(damage).toString(),
+            Math.floor(damage).toString() + (isCrit ? '!' : ''),
             enemyX,
             enemy.y,
-            '#ffffff',
-            16 + Math.min(10, damage * 2)
+            isCrit ? '#fbbf24' : '#ffffff',
+            isCrit ? 24 : (16 + Math.min(10, damage * 2))
           );
 
           // Track damage for DPS
@@ -421,6 +466,19 @@ export class GameEngine {
     });
     if (this.forces) {
       this.forces.addShake(GAME_CONFIG.effects.leakShake);
+    }
+  }
+
+  spawnShieldBreakEffect(x, y) {
+    if (!this.particles) return;
+    this.particles.emitBurst({
+      x,
+      y,
+      ...GAME_CONFIG.effects.shieldBreak,
+    });
+    // Intense shake
+    if (this.forces) {
+      this.forces.addShake({ magnitude: 12, duration: 300 });
     }
   }
 
@@ -505,6 +563,7 @@ export class GameEngine {
           lane: player.lane,
           elapsed: this.state.elapsed,
         });
+        this.spawnShieldBreakEffect(playerX, playerY);
         this.state.enemyProjectiles.splice(i, 1);
       }
     }

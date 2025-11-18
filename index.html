@@ -1,134 +1,145 @@
 <!DOCTYPE html>
 <html lang="en" data-layout="desktop">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lane Survivor</title>
-    <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/modal.css" />
-    <link rel="stylesheet" href="styles/gameOver.css" />
-    <link rel="stylesheet" href="styles/runHistory.css" />
-  </head>
-  <body>
-    <div id="app">
-      <header class="app-header">
-        <h1>Lane Survivor</h1>
-        <div class="header-controls">
-          <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
-        </div>
-      </header>
-      <main class="game-layout">
-        <section class="game-panel">
-          <canvas id="game-canvas" aria-label="Lane Survivor playfield"></canvas>
-          <div class="hud" data-hud>
-            <div class="hud-card">
-              <span class="label">Score</span>
-              <span class="value" data-score>0</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Health</span>
-              <span class="value" data-health>❤️❤️❤️❤️❤️</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Survival</span>
-              <span class="value" data-timer>00:00</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Level</span>
-              <span class="value" data-level>1</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">DPS</span>
-              <span class="value" data-dps>0</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Difficulty</span>
-              <span class="value" data-difficulty>1.0x</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Kills</span>
-              <span class="value" data-kills>0</span>
-            </div>
-            <div class="hud-card">
-              <span class="label">Passed</span>
-              <span class="value" data-passed>0</span>
-            </div>
-          </div>
-          <div class="touch-controls" data-touch-controls>
-            <button class="touch-button" data-action="move-left" aria-label="Move left">⟵</button>
-            <button class="touch-button" data-action="fire" aria-label="Fire">🔥</button>
-            <button class="touch-button" data-action="move-right" aria-label="Move right">⟶</button>
-            <button class="touch-button" data-action="restart" aria-label="Restart">↻</button>
-          </div>
-        </section>
-        <aside class="info-panel">
-          <article class="info-card history-panel" data-history>
-            <!-- Run history will be inserted here -->
-          </article>
-          <article class="info-card">
-            <h2>How to Play</h2>
-            <ul>
-              <li>Slide between four quantum lanes to dodge neon foes.</li>
-              <li>Tap anywhere or press space to unleash projectiles.</li>
-              <li>Leaks cost health — survive as long as you can.</li>
-              <li>Performance-tuned for 60 FPS on Raspberry Pi 2B.</li>
-            </ul>
-          </article>
-          <article class="info-card milestone-card">
-            <div class="milestone-title">Current Milestone · Playtest Sprint</div>
-            <div class="milestone-item">
-              <span>1</span>
-              <p>Deploy this static build to your Pi 2B or GitHub Pages and verify responsive layout on Android slabs and foldables.</p>
-            </div>
-            <div class="milestone-item">
-              <span>2</span>
-              <p>Gather 10+ survival runs noting score, survival time, and perceived lag; log issues in <code>docs/milestone-notes.md</code>.</p>
-            </div>
-            <div class="milestone-item">
-              <span>3</span>
-              <p>Prioritize next tweaks (balance, art, audio) based on playtest notes for the upcoming enhancement sprint.</p>
-            </div>
-          </article>
-        </aside>
-      </main>
-      <footer>Ready for static hosting — copy to any web server or run <code>python -m http.server</code> locally.</footer>
-    </div>
-    <script type="module" src="src/main.js"></script>
 
-    <div id="upgradeModal" class="modal">
-      <div class="upgrade-panel">
-        <div class="upgrade-title">LEVEL UP!</div>
-        <div class="upgrade-subtitle">Choose your upgrade</div>
-        <div class="upgrade-options"></div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lane Survivor</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/modal.css" />
+  <link rel="stylesheet" href="styles/gameOver.css" />
+  <link rel="stylesheet" href="styles/runHistory.css" />
+</head>
+
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>Lane Survivor</h1>
+      <div class="header-controls">
+        <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
       </div>
+    </header>
+    <main class="game-layout">
+      <section class="game-panel">
+        <canvas id="game-canvas" aria-label="Lane Survivor playfield"></canvas>
+        <div class="hud" data-hud>
+          <div class="hud-card">
+            <span class="label">Score</span>
+            <span class="value" data-score>0</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Health</span>
+            <span class="value" data-health>❤️❤️❤️❤️❤️</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Survival</span>
+            <span class="value" data-timer>00:00</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Level</span>
+            <span class="value" data-level>1</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">DPS</span>
+            <span class="value" data-dps>0</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Difficulty</span>
+            <span class="value" data-difficulty>1.0x</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Kills</span>
+            <span class="value" data-kills>0</span>
+          </div>
+          <div class="hud-card">
+            <span class="label">Passed</span>
+            <span class="value" data-passed>0</span>
+          </div>
+        </div>
+        <div id="combo-meter" class="combo-meter hidden">
+          <div class="combo-count" data-combo-count>0</div>
+          <div class="combo-label">COMBO</div>
+        </div>
+        <div class="touch-controls" data-touch-controls>
+          <button class="touch-button" data-action="move-left" aria-label="Move left">⟵</button>
+          <button class="touch-button" data-action="fire" aria-label="Fire">🔥</button>
+          <button class="touch-button" data-action="move-right" aria-label="Move right">⟶</button>
+          <button class="touch-button" data-action="restart" aria-label="Restart">↻</button>
+        </div>
+      </section>
+      <aside class="info-panel">
+        <article class="info-card history-panel" data-history>
+          <!-- Run history will be inserted here -->
+        </article>
+        <article class="info-card">
+          <h2>How to Play</h2>
+          <ul>
+            <li>Slide between four quantum lanes to dodge neon foes.</li>
+            <li>Tap anywhere or press space to unleash projectiles.</li>
+            <li>Leaks cost health — survive as long as you can.</li>
+            <li>Performance-tuned for 60 FPS on Raspberry Pi 2B.</li>
+          </ul>
+        </article>
+        <article class="info-card milestone-card">
+          <div class="milestone-title">Current Milestone · Playtest Sprint</div>
+          <div class="milestone-item">
+            <span>1</span>
+            <p>Deploy this static build to your Pi 2B or GitHub Pages and verify responsive layout on Android slabs and
+              foldables.</p>
+          </div>
+          <div class="milestone-item">
+            <span>2</span>
+            <p>Gather 10+ survival runs noting score, survival time, and perceived lag; log issues in
+              <code>docs/milestone-notes.md</code>.</p>
+          </div>
+          <div class="milestone-item">
+            <span>3</span>
+            <p>Prioritize next tweaks (balance, art, audio) based on playtest notes for the upcoming enhancement sprint.
+            </p>
+          </div>
+        </article>
+      </aside>
+    </main>
+    <footer>Ready for static hosting — copy to any web server or run <code>python -m http.server</code> locally.
+    </footer>
+  </div>
+  <script type="module" src="src/main.js"></script>
+
+  <div id="upgradeModal" class="modal">
+    <div class="upgrade-panel">
+      <div class="upgrade-title">LEVEL UP!</div>
+      <div class="upgrade-subtitle">Choose your upgrade</div>
+      <div class="upgrade-options"></div>
     </div>
+  </div>
 
-    <div id="settingsModal" class="modal">
-      <div class="settings-panel">
-        <div class="settings-title">⚙️ Settings</div>
-        
-        <div class="setting-item">
-          <label class="setting-label">Auto-Collect XP</label>
-          <div class="setting-description">Automatically collect XP orbs from anywhere on screen</div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="autoCollectToggle">
-            <span class="slider"></span>
-          </label>
-        </div>
+  <div id="settingsModal" class="modal">
+    <div class="settings-panel">
+      <div class="settings-title">⚙️ Settings</div>
 
-        <div class="setting-item">
-          <label class="setting-label">Enemy Pass-Through Limit</label>
-          <div class="setting-description">How many enemies can pass through before game over (0 = instant death)</div>
-          <input type="number" id="passThroughLimit" class="number-input" min="0" max="500" value="100">
-          <span class="setting-value"> enemies allowed</span>
-        </div>
-
-        <button class="close-settings-btn" id="closeSettingsBtn">Close</button>
+      <div class="setting-item">
+        <label class="setting-label">Auto-Collect XP</label>
+        <div class="setting-description">Automatically collect XP orbs from anywhere on screen</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoCollectToggle">
+          <span class="slider"></span>
+        </label>
       </div>
-    </div>
 
-    <div id="gameOverModal">
-      <!-- Game over content will be inserted here -->
+      <div class="setting-item">
+        <label class="setting-label">Enemy Pass-Through Limit</label>
+        <div class="setting-description">How many enemies can pass through before game over (0 = instant death)</div>
+        <input type="number" id="passThroughLimit" class="number-input" min="0" max="500" value="100">
+        <span class="setting-value"> enemies allowed</span>
+      </div>
+
+      <button class="close-settings-btn" id="closeSettingsBtn">Close</button>
     </div>
-  </body>
+  </div>
+
+  <div id="gameOverModal">
+    <!-- Game over content will be inserted here -->
+  </div>
+</body>
+
 </html>

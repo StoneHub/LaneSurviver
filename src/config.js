@@ -38,6 +38,42 @@ export const GAME_CONFIG = {
       fadePower: 1.6,
     },
     leakShake: { magnitude: 8, duration: 240 },
+    criticalHit: {
+      count: 12,
+      palette: ['#fbbf24', '#f59e0b', '#ffffff'], // Gold/Amber sparks
+      speed: [180, 300],
+      life: [200, 400],
+      size: [2, 4],
+      gravity: 200,
+      drag: 0.85,
+      blend: 'lighter',
+    },
+    shieldBreak: {
+      count: 20,
+      palette: ['#bae6fd', '#e0f2fe', '#ffffff'], // Glass shards
+      speed: [150, 350],
+      life: [400, 600],
+      size: [3, 6],
+      gravity: 400,
+      drag: 0.9,
+      blend: 'normal', // Glass isn't necessarily additive
+    },
+    playerTrail: {
+      count: 1,
+      palette: ['#ffffff', '#38bdf8'],
+      speed: [0, 20],
+      life: [150, 250],
+      size: [2, 3],
+      gravity: 0,
+      drag: 0.9,
+      blend: 'lighter',
+      fadePower: 2,
+    },
+  },
+  combo: {
+    window: 2000, // ms to keep combo alive
+    threshold: 10, // kills for boost
+    fireRateBoost: 0.6, // multiplier (lower is faster)
   },
   lanes: 4,
   laneWidth: 120,

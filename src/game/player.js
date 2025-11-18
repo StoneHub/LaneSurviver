@@ -73,7 +73,11 @@ export class Player {
       });
     }
 
-    player.cooldown = player.fireCooldown;
+    let cooldown = player.fireCooldown;
+    if (this.state.combo?.isBoostActive) {
+      cooldown *= GAME_CONFIG.combo.fireRateBoost;
+    }
+    player.cooldown = cooldown;
     return { lane, muzzleY };
   }
 }

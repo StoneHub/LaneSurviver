@@ -9,6 +9,12 @@ export class HUDController {
     this.difficultyEl = root.querySelector('[data-difficulty]');
     this.killsEl = root.querySelector('[data-kills]');
     this.passedEl = root.querySelector('[data-passed]');
+
+    // Combo UI (might be outside root if root is just .hud, but let's assume root is passed correctly or we query document)
+    // Actually HUDController root is `[data-hud]`. The combo meter is outside.
+    // I should probably pass the combo element or query it from document.
+    this.comboContainer = document.getElementById('combo-meter');
+    this.comboCountEl = document.querySelector('[data-combo-count]');
   }
 
   update(state) {
@@ -44,6 +50,28 @@ export class HUDController {
     }
     if (this.passedEl) {
       this.passedEl.textContent = `${state.enemiesPassed || 0}/${state.settings?.passThroughLimit || 100}`;
+    }
+
+    if (this.comboContainer && this.comboCountEl) {
+      const count = state.combo?.count || 0;
+      if (count > 1) {
+        this.comboContainer.classList.remove('hidden');
+        this.comboCountEl.textContent = count;
+
+        // Simple scale effect based on count (capped)
+        const scale = 1 + Math.min(0.5, count * 0.05);
+        this.comboCountEl.style.transform = `scale(${scale})`;
+
+        if (state.combo.isBoostActive) {
+          this.comboCountEl.style.color = '#ef4444'; // Red for boost
+          this.comboCountEl.style.textShadow = '0 0 30px rgba(239, 68, 68, 0.8)';
+        } else {
+          this.comboCountEl.style.color = '#fbbf24';
+          this.comboCountEl.style.textShadow = '0 0 20px rgba(251, 191, 36, 0.5)';
+        }
+      } else {
+        this.comboContainer.classList.add('hidden');
+      }
     }
   }
 }

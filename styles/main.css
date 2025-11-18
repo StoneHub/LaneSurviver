@@ -227,3 +227,43 @@ footer {
   color: rgba(148, 163, 184, 0.68);
   text-align: center;
 }
+
+.combo-meter {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.2s;
+}
+
+.combo-meter.hidden {
+  opacity: 0;
+}
+
+.combo-count {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #fbbf24;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  line-height: 1;
+}
+
+.combo-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.combo-pulse {
+  animation: comboPulse 0.15s ease-out;
+}
+
+@keyframes comboPulse {
+  0% { transform: translateX(-50%) scale(1.5); }
+  100% { transform: translateX(-50%) scale(1); }
+}
