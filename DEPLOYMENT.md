@@ -1,64 +1,60 @@
 # Deployment Guide
 
-This guide provides instructions on how to deploy the Lane Survivor game as a static website on your `flyingchanges.net` domain.
+This guide provides instructions on how to deploy the Lane Survivor game to `flyingchangesfarm.net/LaneSurviver` using Firebase Hosting.
 
-## 1. Project Structure
+## 1. Project Setup
 
-For this deployment, we'll create a "dev corner" page at `flyingchanges.net/dev-corner` and host the game at `flyingchanges.net/dev-corner/lane-survivor`.
+The project is configured to be hosted in a subdirectory (`/LaneSurviver`).
 
-Here's the recommended directory structure on your web server:
+### Build Script
+A build script (`scripts/build.js`) is provided to prepare the files for deployment. It creates a `dist/LaneSurviver` directory containing the game files.
 
-```
-/ (your web root, e.g., /var/www/html)
-|-- dev-corner/
-|   |-- index.html  (your dev corner page)
-|   |-- lane-survivor/
-|   |   |-- index.html
-|   |   |-- styles/
-|   |   |   |-- main.css
-|   |   |   |-- modal.css
-|   |   |-- src/
-|   |   |   |-- ... (all game source files)
-|   |   |-- ... (other game files and directories)
+To run the build locally:
+```bash
+node scripts/build.js
 ```
 
-## 2. Dev Corner Page
+## 2. Firebase Configuration
 
-Create a new `index.html` file in the `/dev-corner` directory. This will be your "dev corner" page.
+The project uses the following Firebase configuration:
+- **Project ID**: `possible-haven-471616-f0`
+- **Public Directory**: `dist`
+- **Hosting Path**: `/LaneSurviver` (handled by the build script structure)
 
-Here's a simple example:
+## 3. Automated Deployment (GitHub Actions)
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dev Corner</title>
-</head>
-<body>
-  <h1>Dev Corner</h1>
-  <p>Welcome to my development corner. Here are some of my projects:</p>
-  <ul>
-    <li><a href="/dev-corner/lane-survivor/">Lane Survivor</a></li>
-  </ul>
-</body>
-</html>
-```
+The deployment is automated using GitHub Actions. Whenever you push to the `main` branch, the workflow in `.github/workflows/firebase-deploy.yml` will:
+1.  Build the project using `scripts/build.js`.
+2.  Deploy the `dist` folder to Firebase Hosting.
 
-## 3. Deploying the Game
+### Required Secrets
+For the GitHub Action to work, you need to add a secret to your GitHub repository:
 
-1.  **Copy Game Files:** Copy all the files and directories from your local Lane Survivor project to the `/dev-corner/lane-survivor/` directory on your web server.
+1.  **Generate Service Account Key**:
+    - Go to the Firebase Console > Project Settings > Service accounts.
+    - Click "Generate new private key".
+    - This will download a JSON file.
 
-2.  **Verify File Paths:** Ensure that all the file paths in your `index.html` are correct. The current project uses relative paths (e.g., `src/main.js`), which should work without any changes.
+2.  **Add Secret to GitHub**:
+    - Go to your GitHub repository > Settings > Secrets and variables > Actions.
+    - Create a new repository secret named `FIREBASE_SERVICE_ACCOUNT_POSSIBLE_HAVEN_471616_F0`.
+    - Paste the entire content of the JSON file into the secret value.
 
-3.  **Web Server Configuration:** Make sure your web server is configured to serve static files. For most servers (like Apache or Nginx), this is the default behavior.
+## 4. Manual Deployment (Optional)
 
-## 4. Accessing the Game
+You can also deploy manually from your local machine using the Firebase CLI (requires `firebase-tools` installed).
 
-Once you've deployed the files, you should be able to access:
+1.  **Login**:
+    ```bash
+    firebase login
+    ```
 
-*   Your dev corner at `http://flyingchanges.net/dev-corner`
-*   The game at `http://flyingchanges.net/dev-corner/lane-survivor/`
+2.  **Build**:
+    ```bash
+    node scripts/build.js
+    ```
 
-That's it! The game is a static website and doesn't require any special server-side configuration.
+3.  **Deploy**:
+    ```bash
+    firebase deploy --only hosting
+    ```

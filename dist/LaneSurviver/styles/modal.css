@@ -1,0 +1,91 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.active {
+  display: flex;
+}
+
+/* Upgrade Modal - Non-Blocking Override */
+#upgradeModal {
+  background: rgba(0, 0, 0, 0.15) !important;
+  /* Nearly transparent */
+  pointer-events: none;
+  /* Let clicks pass through */
+  align-items: flex-start !important;
+  padding-top: 10vh;
+}
+
+#upgradeModal .upgrade-panel {
+  pointer-events: auto;
+  /* Re-enable clicks on panel */
+}
+
+.upgrade-panel {
+  background: #161b22;
+  border: 4px solid #58a6ff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 700px;
+}
+
+.upgrade-title {
+  font-size: 32px;
+  color: #58a6ff;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.upgrade-subtitle {
+  text-align: center;
+  color: #8b949e;
+  margin-bottom: 25px;
+}
+
+.upgrade-options {
+  display: flex;
+  gap: 15px;
+}
+
+.upgrade-card {
+  flex: 1;
+  background: #0d1117;
+  border: 3px solid #30363d;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upgrade-card:hover {
+  border-color: #58a6ff;
+  transform: translateY(-5px);
+}
+
+.upgrade-card-title {
+  font-size: 18px;
+  color: #58a6ff;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.upgrade-card-desc {
+  font-size: 13px;
+  color: #8b949e;
+  line-height: 1.5;
+}
+
+.upgrade-level {
+  margin-top: 10px;
+  color: #ffa657;
+  font-size: 12px;
+}
